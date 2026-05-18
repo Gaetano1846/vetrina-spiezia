@@ -69,11 +69,11 @@ export default function Footer() {
 
           {/* Servizi */}
           <div>
-            <h4 className="text-[#001D3D] text-xs font-black uppercase tracking-widest mb-5">Servizi</h4>
+            <h4 className="text-[#111] text-xs font-black uppercase tracking-widest mb-5">Servizi</h4>
             <ul className="space-y-2.5">
               {LINKS_SERVIZI.map((l, i) => (
                 <li key={i}>
-                  <Link href={l.href} className="text-sm text-[#57636C] hover:text-[#001D3D] transition-colors flex items-center gap-1.5 group">
+                  <Link href={l.href} className="text-sm text-[#57636C] hover:text-[#111] transition-colors flex items-center gap-1.5 group">
                     <span className="w-1 h-1 rounded-full bg-[#FFC300] flex-shrink-0 group-hover:scale-125 transition-transform" />
                     {l.label}
                   </Link>
@@ -84,20 +84,20 @@ export default function Footer() {
 
           {/* Le nostre sedi */}
           <div>
-            <h4 className="text-[#001D3D] text-xs font-black uppercase tracking-widest mb-5">Le nostre sedi</h4>
+            <h4 className="text-[#111] text-xs font-black uppercase tracking-widest mb-5">Le nostre sedi</h4>
             <div className="space-y-4">
               {SEDI.map((s) => (
                 <div key={s.city} className="group">
                   <div className="flex items-center gap-1.5 mb-0.5">
                     <MapPin size={12} className="text-[#FFC300] flex-shrink-0" />
-                    <p className="text-sm text-[#001D3D] font-semibold">{s.city}</p>
+                    <p className="text-sm text-[#111] font-semibold">{s.city}</p>
                   </div>
                   <p className="text-xs text-[#9DA5AE] mb-1 pl-[18px]">{s.address}</p>
                   <a
                     href={s.maps}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-[11px] font-medium text-[#FFC300] hover:text-[#001D3D] transition-colors pl-[18px]"
+                    className="text-[11px] font-medium text-[#FFC300] hover:text-[#111] transition-colors pl-[18px]"
                   >
                     Indica via Maps →
                   </a>
@@ -108,19 +108,19 @@ export default function Footer() {
 
           {/* Orari */}
           <div>
-            <h4 className="text-[#001D3D] text-xs font-black uppercase tracking-widest mb-5">Orari apertura</h4>
+            <h4 className="text-[#111] text-xs font-black uppercase tracking-widest mb-5">Orari apertura</h4>
             <div className="space-y-2">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-[#57636C] flex items-center gap-1.5">
+              <div className="flex items-start justify-between text-sm gap-3">
+                <span className="text-[#57636C] flex items-center gap-1.5 flex-shrink-0">
                   <Clock size={12} className="text-[#9DA5AE]" /> Lun – Ven
                 </span>
-                <span className="text-[#001D3D] font-semibold">08:30 – 18:30</span>
+                <span className="text-[#111] font-semibold text-right leading-relaxed">08:30 – 13:30<br/>14:30 – 19:00</span>
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-[#57636C] flex items-center gap-1.5">
                   <Clock size={12} className="text-[#9DA5AE]" /> Sabato
                 </span>
-                <span className="text-[#001D3D] font-semibold">08:30 – 13:00</span>
+                <span className="text-[#111] font-semibold">08:30 – 13:30</span>
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-[#57636C] flex items-center gap-1.5">
@@ -152,9 +152,9 @@ export default function Footer() {
         <div className="max-w-8xl mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[#9DA5AE]">
           <p>© {new Date().getFullYear()} Spiezia Tyres S.p.A. · P.IVA IT07737141213 · Tutti i diritti riservati</p>
           <div className="flex items-center gap-4">
-            <Link href="/chi-siamo" className="hover:text-[#001D3D] transition-colors">Chi siamo</Link>
-            <Link href="/termini" className="hover:text-[#001D3D] transition-colors">Termini</Link>
-            <Link href="/privacy" className="hover:text-[#001D3D] transition-colors">Privacy</Link>
+            <Link href="/chi-siamo" className="hover:text-[#111] transition-colors">Chi siamo</Link>
+            <Link href="/termini" className="hover:text-[#111] transition-colors">Termini</Link>
+            <Link href="/privacy" className="hover:text-[#111] transition-colors">Privacy</Link>
           </div>
         </div>
       </div>

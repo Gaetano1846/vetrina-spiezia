@@ -89,7 +89,7 @@ export default function ContattiPage() {
               <div>
                 <p className="text-xs font-black uppercase tracking-widest text-[#9DA5AE] mb-0.5">Telefono</p>
                 <p className="font-bold text-[#111827] text-sm">+39 081 511 5011</p>
-                <p className="text-xs text-[#57636C] mt-0.5">Lun–Ven 08:30–18:30 · Sab 08:30–13:00</p>
+                <p className="text-xs text-[#57636C] mt-0.5">Lun–Ven 08:30–13:30, 14:30–19:00 · Sab 08:30–13:30</p>
               </div>
             </a>
 
@@ -148,11 +148,11 @@ export default function ContattiPage() {
               <div className="space-y-1 text-sm">
                 <div className="flex justify-between gap-8">
                   <span className="text-[#57636C]">Lunedì – Venerdì</span>
-                  <span className="font-semibold text-[#111827]">08:30 – 18:30</span>
+                  <span className="font-semibold text-[#111827] text-right leading-relaxed">08:30 – 13:30<br/>14:30 – 19:00</span>
                 </div>
                 <div className="flex justify-between gap-8">
                   <span className="text-[#57636C]">Sabato</span>
-                  <span className="font-semibold text-[#111827]">08:30 – 13:00</span>
+                  <span className="font-semibold text-[#111827]">08:30 – 13:30</span>
                 </div>
                 <div className="flex justify-between gap-8">
                   <span className="text-[#57636C]">Domenica</span>

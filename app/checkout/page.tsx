@@ -33,8 +33,8 @@ const SERVIZIO_REPARTO: Record<string, string> = {
 };
 
 const FASCE_ORARIE = [
-  "08:30 – 10:00", "10:00 – 11:30", "11:30 – 13:00",
-  "14:00 – 15:30", "15:30 – 17:00", "17:00 – 18:30",
+  "08:30 – 10:00", "10:00 – 11:30", "11:30 – 13:30",
+  "14:30 – 16:00", "16:00 – 17:30", "17:30 – 19:00",
 ];
 
 const SERVIZI = [
@@ -265,22 +265,22 @@ export default function PrenotazionePage() {
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
 
       {/* Steps */}
-      <div className="flex items-center gap-0 mb-10 overflow-x-auto scrollbar-hide">
+      <div className="flex items-center justify-center gap-0 mb-10">
         {STEPS.map((s, i) => (
-          <div key={s.id} className="flex items-center flex-shrink-0">
-            <div className="flex items-center gap-2">
-              <div className={`w-7 h-7 flex items-center justify-center text-xs font-black rounded-full border-2 transition-colors ${
-                i < stepIdx   ? "bg-[#249689] border-[#249689] text-white"
+          <div key={s.id} className="flex items-center">
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <div className={`w-7 h-7 flex items-center justify-center text-xs font-black rounded-full border-2 transition-colors flex-shrink-0 ${
+                i < stepIdx   ? "bg-[#FFC300] border-[#FFC300] text-[#111]"
                 : i === stepIdx ? "bg-[#111] border-[#111] text-white"
                 : "border-[#E5E7EB] text-[#9DA5AE]"
               }`}>
                 {i < stepIdx ? <Check size={12} /> : i + 1}
               </div>
-              <span className={`text-xs font-bold uppercase tracking-widest whitespace-nowrap ${
+              <span className={`hidden sm:inline text-xs font-bold uppercase tracking-widest whitespace-nowrap ${
                 i === stepIdx ? "text-[#111]" : "text-[#9DA5AE]"
               }`}>{s.label}</span>
             </div>
-            {i < STEPS.length - 1 && <ChevronRight size={14} className="text-[#E5E7EB] mx-3" />}
+            {i < STEPS.length - 1 && <ChevronRight size={14} className="text-[#E5E7EB] mx-2 sm:mx-3 flex-shrink-0" />}
           </div>
         ))}
       </div>
