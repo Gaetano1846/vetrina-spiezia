@@ -60,7 +60,7 @@ export default function HomeHero() {
 
       {tab === "misura" ? (
         <div className="space-y-3">
-          <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-3 gap-2">
             <div>
               <p className="text-[10px] font-black uppercase tracking-widest text-[#9DA5AE] mb-1.5">Largh.</p>
               <Combobox
@@ -123,30 +123,30 @@ export default function HomeHero() {
             {loading ? <Loader2 size={18} className="animate-spin" /> : <Search size={18} />}
             Cerca Pneumatici
           </button>
+
+          {/* Misure popolari — solo nel tab misura */}
+          <div className="pt-3 border-t border-[#f0f0f0]">
+            <p className="text-[10px] font-black uppercase tracking-widest text-[#9DA5AE] mb-2">Misure popolari</p>
+            <div className="grid grid-cols-3 gap-1.5">
+              {POPULAR_SIZES.map((s) => {
+                const [wh, r] = s.split(" ");
+                const [w, h] = wh.split("/");
+                return (
+                  <button
+                    key={s}
+                    onClick={() => router.push(`/prodotti?larghezza=${w}&altezza=${h}&diametro=${r.replace("R","")}`)}
+                    className="text-[11px] font-mono font-semibold px-2 py-1.5 rounded-lg border border-[#E5E7EB] text-[#555] hover:border-[#FFC300] hover:text-[#111] transition-colors text-center"
+                  >
+                    {s}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         </div>
       ) : (
         <VehicleSearch />
       )}
-
-      {/* Popular sizes */}
-      <div className="mt-4 pt-4 border-t border-[#f0f0f0]">
-        <p className="text-[10px] font-black uppercase tracking-widest text-[#9DA5AE] mb-2">Misure popolari</p>
-        <div className="grid grid-cols-3 gap-1.5">
-          {POPULAR_SIZES.map((s) => {
-            const [wh, r] = s.split(" ");
-            const [w, h] = wh.split("/");
-            return (
-              <button
-                key={s}
-                onClick={() => router.push(`/prodotti?larghezza=${w}&altezza=${h}&diametro=${r.replace("R","")}`)}
-                className="text-[11px] font-mono font-semibold px-2 py-1.5 rounded-lg border border-[#E5E7EB] text-[#555] hover:border-[#FFC300] hover:text-[#111] transition-colors text-center"
-              >
-                {s}
-              </button>
-            );
-          })}
-        </div>
-      </div>
     </div>
   );
 }

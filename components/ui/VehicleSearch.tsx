@@ -1,12 +1,27 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Loader2, ArrowRight } from "lucide-react";
+import { Loader2, ArrowRight, Car } from "lucide-react";
 import {
   getMakes, getModels, getYears, getModifications, getFitment,
   TaMake, TaModel, TaModification,
 } from "@/lib/tyresaddict";
 import Combobox from "@/components/ui/Combobox";
+
+const POPULAR_CARS = [
+  { make: "Fiat",        model: "Panda",       label: "Fiat Panda"      },
+  { make: "Fiat",        model: "500",         label: "Fiat 500"        },
+  { make: "Volkswagen",  model: "Golf",        label: "VW Golf"         },
+  { make: "Renault",     model: "Clio",        label: "Renault Clio"    },
+  { make: "Ford",        model: "Focus",       label: "Ford Focus"      },
+  { make: "Toyota",      model: "Yaris",       label: "Toyota Yaris"    },
+  { make: "Opel",        model: "Corsa",       label: "Opel Corsa"      },
+  { make: "BMW",         model: "3 Series",    label: "BMW Serie 3"     },
+  { make: "Lancia",      model: "Ypsilon",     label: "Lancia Ypsilon"  },
+  { make: "Alfa Romeo",  model: "Giulietta",   label: "Alfa Giulietta"  },
+  { make: "Jeep",        model: "Renegade",    label: "Jeep Renegade"   },
+  { make: "Dacia",       model: "Sandero",     label: "Dacia Sandero"   },
+];
 
 export default function VehicleSearch() {
   const router = useRouter();
@@ -59,6 +74,32 @@ export default function VehicleSearch() {
     if (!modelId) return;
     try { setMods(await getModifications(modelId, y)); }
     catch { setError("Errore nel caricamento delle versioni"); }
+  };
+
+  const onPopularClick = async (popularMake: string, popularModel: string) => {
+    setError("");
+    setModelId(""); setModelName(""); setYear(""); setModId("");
+    setModels([]); setYears([]); setMods([]);
+
+    const make = makes.find((m) => m.make_name === popularMake);
+    if (!make) return;
+
+    setMakeId(make.make_id);
+    setMakeName(popularMake);
+
+    try {
+      const loadedModels = await getModels(make.make_id);
+      setModels(loadedModels);
+      const matched = loadedModels.find(
+        (m) => m.model_name.toLowerCase() === popularModel.toLowerCase()
+      );
+      if (matched) {
+        setModelId(matched.model_id);
+        setModelName(matched.model_name);
+        const loadedYears = await getYears(matched.model_id);
+        setYears(loadedYears.sort((a, b) => b - a));
+      }
+    } catch { setError("Errore nel caricamento dei dati"); }
   };
 
   const submit = async () => {
@@ -139,6 +180,29 @@ export default function VehicleSearch() {
         {searching ? <Loader2 size={18} className="animate-spin" /> : <ArrowRight size={18} />}
         Trova pneumatici per la tua auto
       </button>
+
+      {/* Auto popolari */}
+      <div className="pt-3 border-t border-[#f0f0f0]">
+        <p className="text-[10px] font-black uppercase tracking-widest text-[#9DA5AE] mb-2 flex items-center gap-1.5">
+          <Car size={11} /> Auto popolari
+        </p>
+        <div className="grid grid-cols-3 gap-1.5">
+          {POPULAR_CARS.map((car) => (
+            <button
+              key={car.label}
+              onClick={() => onPopularClick(car.make, car.model)}
+              disabled={loading}
+              className={`text-[11px] font-semibold px-2 py-1.5 rounded-lg border text-center transition-colors truncate ${
+                makeName === car.make && modelName === car.model
+                  ? "border-[#FFC300] bg-[#FFC300]/10 text-[#111] font-bold"
+                  : "border-[#E5E7EB] text-[#555] hover:border-[#FFC300] hover:text-[#111]"
+              }`}
+            >
+              {car.label}
+            </button>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
