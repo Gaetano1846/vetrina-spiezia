@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400" fill="none">
+  <rect width="400" height="400" fill="#F7F7F5"/>
+  <circle cx="200" cy="200" r="130" stroke="#E5E5E5" stroke-width="40" fill="none"/>
+  <circle cx="200" cy="200" r="55" fill="#E5E5E5"/>
+  <circle cx="200" cy="200" r="35" fill="#F7F7F5"/>
+  <text x="200" y="330" text-anchor="middle" fill="#D4D4D4" font-family="system-ui" font-size="22" font-weight="600">PNEUMATICO</text>
+</svg>

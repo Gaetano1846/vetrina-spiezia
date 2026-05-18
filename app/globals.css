@@ -1,0 +1,179 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --navy: #001D3D;
+    --navy-light: #0A2B5E;
+    --navy-lighter: #0D3572;
+    --gold: #FFC300;
+    --gold-dark: #E6B000;
+    --gold-pale: #FFF8DC;
+    --bg: #F1F4F8;
+    --bg-card: #FFFFFF;
+    --ink: #000000;
+    --ink-secondary: #57636C;
+    --ink-muted: #9DA5AE;
+    --ink-faint: #E5E7EB;
+    --success: #249689;
+    --error: #FF5963;
+    --radius: 8px;
+    --shadow: 0 2px 8px rgba(0,29,61,0.10);
+    --shadow-md: 0 4px 16px rgba(0,29,61,0.12);
+    --shadow-lg: 0 8px 32px rgba(0,29,61,0.14);
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: #F1F4F8;
+    color: #000000;
+    font-family: var(--font-inter), Inter, system-ui, sans-serif;
+    line-height: 1.6;
+  }
+
+  ::selection {
+    background: #FFC300;
+    color: #001D3D;
+  }
+}
+
+@layer components {
+  /* ── Buttons ── */
+  .btn-navy {
+    @apply inline-flex items-center justify-center gap-2 font-semibold transition-all duration-200 cursor-pointer select-none px-5 py-2.5 text-sm text-white rounded bg-[#001D3D] hover:bg-[#0A2B5E] active:scale-[0.98] shadow-sm;
+  }
+
+  .btn-gold {
+    @apply inline-flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer select-none px-5 py-2.5 text-sm text-[#001D3D] font-bold rounded bg-[#FFC300] hover:bg-[#E6B000] active:scale-[0.98] shadow-sm;
+  }
+
+  .btn-gold-lg {
+    @apply inline-flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer select-none px-7 py-3.5 text-base text-[#001D3D] font-bold rounded-lg bg-[#FFC300] hover:bg-[#E6B000] active:scale-[0.98] shadow-[0_4px_20px_rgba(255,195,0,0.35)];
+  }
+
+  .btn-outline-navy {
+    @apply inline-flex items-center justify-center gap-2 font-semibold transition-all duration-200 cursor-pointer select-none px-5 py-2.5 text-sm text-[#001D3D] rounded border-2 border-[#001D3D] hover:bg-[#001D3D] hover:text-white active:scale-[0.98];
+  }
+
+  .btn-outline-white {
+    @apply inline-flex items-center justify-center gap-2 font-semibold transition-all duration-200 cursor-pointer select-none px-5 py-2.5 text-sm text-white rounded border-2 border-white/40 hover:border-white hover:bg-white/10 active:scale-[0.98];
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 font-semibold transition-all duration-200 cursor-pointer select-none px-3 py-2 text-sm text-[#57636C] hover:text-[#001D3D] hover:bg-white/60 rounded;
+  }
+
+  /* ── Cards ── */
+  .card-hover {
+    @apply bg-white rounded-lg shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-0.5;
+  }
+
+  .card-hover-gold {
+    @apply bg-white rounded-lg shadow-sm transition-all duration-200 hover:shadow-[0_4px_20px_rgba(255,195,0,0.25)] hover:-translate-y-0.5;
+  }
+
+  /* ── Inputs ── */
+  .input {
+    @apply w-full px-4 py-2.5 bg-white border border-[#E5E7EB] rounded text-sm text-[#000000] placeholder:text-[#9DA5AE] focus:outline-none focus:border-[#001D3D] focus:ring-2 focus:ring-[#001D3D]/10 transition-all;
+  }
+
+  .input-lg {
+    @apply w-full px-5 py-3.5 bg-white border border-[#E5E7EB] rounded-lg text-base text-[#000000] placeholder:text-[#9DA5AE] focus:outline-none focus:border-[#001D3D] focus:ring-2 focus:ring-[#001D3D]/10 transition-all;
+  }
+
+  /* ── Labels ── */
+  .label-sm {
+    @apply text-xs font-semibold uppercase tracking-wider text-[#57636C];
+  }
+
+  .eyebrow {
+    @apply text-xs font-bold uppercase tracking-widest text-[#FFC300];
+  }
+
+  /* ── Section headings ── */
+  .section-title {
+    @apply text-2xl sm:text-3xl font-bold text-[#001D3D];
+  }
+
+  /* ── Badge ── */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 text-xs font-bold rounded-full;
+  }
+  .badge-gold { @apply inline-flex items-center px-2.5 py-0.5 text-xs font-bold rounded-full bg-[#FFF8DC] text-[#E6B000]; }
+  .badge-navy { @apply inline-flex items-center px-2.5 py-0.5 text-xs font-bold rounded-full bg-[#001D3D] text-white; }
+  .badge-success { @apply inline-flex items-center px-2.5 py-0.5 text-xs font-bold rounded-full bg-emerald-50 text-emerald-700; }
+  .badge-error { @apply inline-flex items-center px-2.5 py-0.5 text-xs font-bold rounded-full bg-red-50 text-red-600; }
+
+  /* ── Nav link ── */
+  .nav-link {
+    @apply text-sm font-semibold text-white/80 hover:text-white transition-colors px-3 py-2 rounded hover:bg-white/10;
+  }
+
+  /* ── Filter checkbox ── */
+  .filter-check {
+    @apply w-4 h-4 rounded border border-[#E5E7EB] flex items-center justify-center flex-shrink-0 transition-colors;
+  }
+  .filter-check-active {
+    @apply w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 transition-colors bg-[#001D3D] border-[#001D3D];
+  }
+}
+
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+
+  .text-balance { text-wrap: balance; }
+}
+
+/* ── Animations ── */
+@keyframes slideInRight {
+  from { transform: translateX(100%); opacity: 0; }
+  to   { transform: translateX(0); opacity: 1; }
+}
+@keyframes slideInLeft {
+  from { transform: translateX(-100%); opacity: 0; }
+  to   { transform: translateX(0); opacity: 1; }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+@keyframes pulse-gold {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255,195,0,0.4); }
+  50%       { box-shadow: 0 0 0 8px rgba(255,195,0,0); }
+}
+
+.cart-overlay { animation: fadeIn 0.2s ease both; }
+.cart-drawer  { animation: slideInRight 0.3s cubic-bezier(0.19,1,0.22,1) both; }
+.mobile-menu  { animation: slideInLeft 0.25s cubic-bezier(0.19,1,0.22,1) both; }
+.fade-in-up   { animation: fadeInUp 0.4s ease both; }
+
+.skeleton {
+  background: linear-gradient(90deg, #E8ECF0 25%, #D8DFE8 50%, #E8ECF0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* ── Gold divider ── */
+.gold-divider {
+  height: 3px;
+  background: linear-gradient(90deg, #FFC300, #E6B000);
+  border-radius: 2px;
+}
