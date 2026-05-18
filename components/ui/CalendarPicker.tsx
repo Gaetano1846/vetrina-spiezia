@@ -91,10 +91,10 @@ export default function CalendarPicker({ value, onChange, min, className = "" }:
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="w-full flex items-center gap-3 border border-[#E5E7EB] rounded-lg px-4 py-2.5 text-sm bg-white hover:border-[#001D3D] focus:outline-none focus:border-[#001D3D] transition-colors text-left"
+        className="w-full flex items-center gap-3 border border-[#E5E7EB] rounded-lg px-4 py-2.5 text-sm bg-white hover:border-[#111] focus:outline-none focus:border-[#FFC300] focus:ring-2 focus:ring-[#FFC300]/20 transition-colors text-left"
       >
         <Calendar size={15} className="text-[#9DA5AE] flex-shrink-0" />
-        <span className={value ? "text-[#001D3D] font-semibold" : "text-[#9DA5AE]"}>
+        <span className={value ? "text-[#111] font-semibold" : "text-[#9DA5AE]"}>
           {value ? formatDisplay(value) : "gg/mm/aaaa"}
         </span>
       </button>
@@ -103,7 +103,7 @@ export default function CalendarPicker({ value, onChange, min, className = "" }:
       {open && (
         <div className="absolute z-50 mt-2 left-0 w-[300px] bg-white border border-[#E5E7EB] rounded-2xl shadow-xl overflow-hidden">
           {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3 bg-[#001D3D]">
+          <div className="flex items-center justify-between px-4 py-3 bg-[#111]">
             <button
               type="button"
               onClick={prevMonth}
@@ -159,12 +159,12 @@ export default function CalendarPicker({ value, onChange, min, className = "" }:
                   className={`
                     w-full aspect-square flex items-center justify-center text-xs font-semibold rounded-lg transition-all
                     ${isSelected
-                      ? "bg-[#001D3D] text-white shadow-sm"
+                      ? "bg-[#FFC300] text-[#111] font-black shadow-sm"
                       : isToday && !isOther && !isSunday
-                      ? "bg-[#FFC300]/20 text-[#001D3D] ring-1 ring-[#FFC300] font-black"
+                      ? "bg-[#111]/10 text-[#111] ring-1 ring-[#111]/30 font-black"
                       : isDisabled
                       ? "text-[#D4D4D4] cursor-not-allowed"
-                      : "text-[#001D3D] hover:bg-[#F1F4F8] hover:text-[#001D3D] cursor-pointer"
+                      : "text-[#111] hover:bg-[#F1F4F8] cursor-pointer"
                     }
                   `}
                 >

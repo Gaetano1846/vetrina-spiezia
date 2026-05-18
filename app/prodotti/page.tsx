@@ -99,13 +99,17 @@ async function ProductsResults({ searchParams }: { searchParams: Awaited<SearchP
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-center gap-2 mt-10">
+            <div className="flex items-center justify-center gap-1 sm:gap-2 mt-10">
               {page > 0 && (
-                <Link href={buildPageUrl(page - 1)} className="btn-outline-navy text-xs px-4 py-2">
-                  ← Precedente
+                <Link
+                  href={buildPageUrl(page - 1)}
+                  className="h-7 sm:h-9 px-2 sm:px-4 flex items-center justify-center text-xs font-bold rounded-lg border-2 border-[#111] text-[#111] hover:bg-[#111] hover:text-white transition-all whitespace-nowrap"
+                >
+                  <span className="sm:hidden">←</span>
+                  <span className="hidden sm:inline">← Precedente</span>
                 </Link>
               )}
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-0.5 sm:gap-1">
                 {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
                   let p_idx = i;
                   if (totalPages > 7) {
@@ -117,10 +121,10 @@ async function ProductsResults({ searchParams }: { searchParams: Awaited<SearchP
                     <Link
                       key={p_idx}
                       href={buildPageUrl(p_idx)}
-                      className={`w-9 h-9 flex items-center justify-center text-xs font-bold rounded-lg border transition-all ${
+                      className={`w-7 h-7 sm:w-9 sm:h-9 flex items-center justify-center text-[10px] sm:text-xs font-bold rounded-lg border transition-all ${
                         p_idx === page
-                          ? "bg-[#001D3D] text-white border-[#001D3D]"
-                          : "border-[#E5E7EB] text-[#57636C] hover:border-[#001D3D] hover:text-[#001D3D]"
+                          ? "bg-[#111] text-white border-[#111]"
+                          : "border-[#E5E7EB] text-[#57636C] hover:border-[#111] hover:text-[#111]"
                       }`}
                     >
                       {p_idx + 1}
@@ -129,8 +133,12 @@ async function ProductsResults({ searchParams }: { searchParams: Awaited<SearchP
                 })}
               </div>
               {page < totalPages - 1 && (
-                <Link href={buildPageUrl(page + 1)} className="btn-outline-navy text-xs px-4 py-2">
-                  Successiva →
+                <Link
+                  href={buildPageUrl(page + 1)}
+                  className="h-7 sm:h-9 px-2 sm:px-4 flex items-center justify-center text-xs font-bold rounded-lg border-2 border-[#111] text-[#111] hover:bg-[#111] hover:text-white transition-all whitespace-nowrap"
+                >
+                  <span className="sm:hidden">→</span>
+                  <span className="hidden sm:inline">Successiva →</span>
                 </Link>
               )}
             </div>

@@ -1,7 +1,7 @@
 "use client";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { ChevronRight, Check, Loader2, ArrowLeft, MapPin, Calendar, Phone, Mail, User, ShoppingCart } from "lucide-react";
+import { ChevronRight, ChevronDown, Check, Loader2, ArrowLeft, MapPin, Calendar, Phone, Mail, User, ShoppingCart } from "lucide-react";
 import CalendarPicker from "@/components/ui/CalendarPicker";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
@@ -43,9 +43,52 @@ const SERVIZI = [
   { id: "consulenza",  label: "Consulenza tecnica"   },
 ];
 
-const inputCls = "w-full border border-[#E5E7EB] rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#001D3D] transition-colors bg-white";
+const inputCls = "w-full border border-[#E5E7EB] rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#FFC300] focus:ring-2 focus:ring-[#FFC300]/20 transition-all bg-white";
 
 type DatiForm = { nome: string; cognome: string; email: string; telefono: string; note: string; };
+
+function FasciaSelect({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    function handler(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    }
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+  return (
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className={`${inputCls} flex items-center justify-between gap-2 text-left`}
+      >
+        <span className={value ? "text-[#111] font-semibold" : "text-[#9DA5AE]"}>
+          {value || "Seleziona"}
+        </span>
+        <ChevronDown size={15} className={`flex-shrink-0 text-[#9DA5AE] transition-transform ${open ? "rotate-180" : ""}`} />
+      </button>
+      {open && (
+        <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-white border border-[#E5E7EB] rounded-xl shadow-xl overflow-hidden">
+          <ul className="py-1">
+            {FASCE_ORARIE.map((f) => (
+              <li
+                key={f}
+                onMouseDown={() => { onChange(f); setOpen(false); }}
+                className={`px-4 py-3 text-sm cursor-pointer select-none transition-colors ${
+                  f === value ? "bg-[#FFC300]/20 text-[#111] font-semibold" : "text-[#111] hover:bg-[#F1F4F8]"
+                }`}
+              >
+                {f}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function PrenotazionePage() {
   const { items, totale, pfuTotale, clearCart } = useCart();
@@ -90,10 +133,10 @@ export default function PrenotazionePage() {
         <div className="w-20 h-20 bg-[#249689] rounded-full flex items-center justify-center mx-auto mb-6 shadow-[0_4px_20px_rgba(36,150,137,0.3)]">
           <Check size={36} className="text-white" />
         </div>
-        <h1 className="text-2xl font-black text-[#001D3D] mb-2">Prenotazione inviata!</h1>
+        <h1 className="text-2xl font-black text-[#111] mb-2">Prenotazione inviata!</h1>
         <p className="text-[#57636C] mb-1">Grazie {dati.nome}, abbiamo ricevuto la tua richiesta.</p>
         <p className="text-sm text-[#9DA5AE] mb-8">
-          Ti contatteremo al numero <strong className="text-[#001D3D]">{dati.telefono}</strong> per confermare l&apos;appuntamento
+          Ti contatteremo al numero <strong className="text-[#111]">{dati.telefono}</strong> per confermare l&apos;appuntamento
           {sedeSel ? ` presso la sede di ${sedeSel.label}` : ""}.
         </p>
         <div className="bg-[#F1F4F8] rounded-2xl p-5 text-left mb-8 space-y-2">
@@ -183,7 +226,7 @@ export default function PrenotazionePage() {
   /* ─── Sidebar ─── */
   const Sidebar = (
     <div className="sticky top-24 border border-[#E5E7EB] rounded-xl overflow-hidden shadow-sm">
-      <div className="px-5 py-4 bg-[#001D3D]">
+      <div className="px-5 py-4 bg-[#111]">
         <p className="text-[10px] font-bold uppercase tracking-widest text-white/70">
           Pneumatici selezionati <span className="text-[#FFC300]">({items.length})</span>
         </p>
@@ -196,19 +239,19 @@ export default function PrenotazionePage() {
                 onError={(e) => { (e.target as HTMLImageElement).src = "/placeholder.svg"; }} />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-bold text-[#001D3D] line-clamp-1">{item.marca} {item.modello}</p>
+              <p className="text-xs font-bold text-[#111] line-clamp-1">{item.marca} {item.modello}</p>
               <p className="text-[10px] text-[#9DA5AE] font-mono">{item.larghezza}/{item.altezza} R{item.diametro}</p>
               <p className="text-[10px] text-[#57636C]">Qtà: {item.quantita}</p>
             </div>
-            <p className="text-sm font-black text-[#001D3D] flex-shrink-0">{formatPrice((item.prezzoUnitario + item.pfu) * item.quantita)}</p>
+            <p className="text-sm font-black text-[#111] flex-shrink-0">{formatPrice((item.prezzoUnitario + item.pfu) * item.quantita)}</p>
           </div>
         ))}
       </div>
       <div className="border-t border-[#E5E7EB] px-5 py-4 bg-[#F1F4F8] text-xs text-[#57636C]">
-        <p className="font-semibold text-[#001D3D] mb-1">Stima di riferimento</p>
+        <p className="font-semibold text-[#111] mb-1">Stima di riferimento</p>
         <div className="flex justify-between"><span>Subtotale</span><span>{formatPrice(totale - pfuTotale)}</span></div>
         <div className="flex justify-between"><span>PFU</span><span>{formatPrice(pfuTotale)}</span></div>
-        <div className="flex justify-between font-black text-sm text-[#001D3D] border-t border-[#E5E7EB] pt-2 mt-2">
+        <div className="flex justify-between font-black text-sm text-[#111] border-t border-[#E5E7EB] pt-2 mt-2">
           <span>Totale stimato</span><span>{formatPrice(totale)}</span>
         </div>
         <p className="text-[10px] text-[#9DA5AE] mt-2 leading-relaxed">
@@ -228,13 +271,13 @@ export default function PrenotazionePage() {
             <div className="flex items-center gap-2">
               <div className={`w-7 h-7 flex items-center justify-center text-xs font-black rounded-full border-2 transition-colors ${
                 i < stepIdx   ? "bg-[#249689] border-[#249689] text-white"
-                : i === stepIdx ? "bg-[#001D3D] border-[#001D3D] text-white"
+                : i === stepIdx ? "bg-[#111] border-[#111] text-white"
                 : "border-[#E5E7EB] text-[#9DA5AE]"
               }`}>
                 {i < stepIdx ? <Check size={12} /> : i + 1}
               </div>
               <span className={`text-xs font-bold uppercase tracking-widest whitespace-nowrap ${
-                i === stepIdx ? "text-[#001D3D]" : "text-[#9DA5AE]"
+                i === stepIdx ? "text-[#111]" : "text-[#9DA5AE]"
               }`}>{s.label}</span>
             </div>
             {i < STEPS.length - 1 && <ChevronRight size={14} className="text-[#E5E7EB] mx-3" />}
@@ -248,7 +291,7 @@ export default function PrenotazionePage() {
           {/* ── STEP 1: Dati ── */}
           {step === "dati" && (
             <div className="space-y-6">
-              <h2 className="text-xl font-black text-[#001D3D]">I tuoi dati</h2>
+              <h2 className="text-xl font-black text-[#111]">I tuoi dati</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-widest text-[#57636C] mb-1.5">
@@ -292,7 +335,7 @@ export default function PrenotazionePage() {
           {/* ── STEP 2: Sede ── */}
           {step === "sede" && (
             <div className="space-y-6">
-              <h2 className="text-xl font-black text-[#001D3D]">Sede e appuntamento</h2>
+              <h2 className="text-xl font-black text-[#111]">Sede e appuntamento</h2>
 
               {/* Servizio */}
               <div>
@@ -300,15 +343,15 @@ export default function PrenotazionePage() {
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   {SERVIZI.map((s) => (
                     <label key={s.id} className={`flex items-center gap-3 p-3.5 border-2 rounded-xl cursor-pointer transition-all ${
-                      servizio === s.id ? "border-[#001D3D] bg-[#F1F4F8]" : "border-[#E5E7EB] bg-white hover:border-[#001D3D]/30"
+                      servizio === s.id ? "border-[#111] bg-[#F1F4F8]" : "border-[#E5E7EB] bg-white hover:border-[#111]/40"
                     }`}>
                       <div className={`w-4 h-4 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-colors ${
-                        servizio === s.id ? "border-[#001D3D]" : "border-[#D4D4D4]"
+                        servizio === s.id ? "border-[#111]" : "border-[#D4D4D4]"
                       }`}>
-                        {servizio === s.id && <div className="w-2 h-2 bg-[#001D3D] rounded-full" />}
+                        {servizio === s.id && <div className="w-2 h-2 bg-[#111] rounded-full" />}
                       </div>
                       <input type="radio" className="sr-only" value={s.id} checked={servizio === s.id} onChange={() => setServizio(s.id)} />
-                      <span className="text-sm font-semibold text-[#001D3D]">{s.label}</span>
+                      <span className="text-sm font-semibold text-[#111]">{s.label}</span>
                     </label>
                   ))}
                 </div>
@@ -320,16 +363,16 @@ export default function PrenotazionePage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {SEDI.map((s) => (
                     <label key={s.id} className={`flex items-start gap-3 p-4 border-2 rounded-xl cursor-pointer transition-all ${
-                      sede === s.id ? "border-[#001D3D] bg-[#F1F4F8]" : "border-[#E5E7EB] bg-white hover:border-[#001D3D]/30"
+                      sede === s.id ? "border-[#111] bg-[#F1F4F8]" : "border-[#E5E7EB] bg-white hover:border-[#111]/40"
                     }`}>
                       <div className={`w-4 h-4 mt-0.5 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-colors ${
-                        sede === s.id ? "border-[#001D3D]" : "border-[#D4D4D4]"
+                        sede === s.id ? "border-[#111]" : "border-[#D4D4D4]"
                       }`}>
-                        {sede === s.id && <div className="w-2 h-2 bg-[#001D3D] rounded-full" />}
+                        {sede === s.id && <div className="w-2 h-2 bg-[#111] rounded-full" />}
                       </div>
                       <input type="radio" className="sr-only" value={s.id} checked={sede === s.id} onChange={() => setSede(s.id)} />
                       <div>
-                        <p className="font-bold text-sm text-[#001D3D]">{s.label}</p>
+                        <p className="font-bold text-sm text-[#111]">{s.label}</p>
                         <p className="text-xs text-[#9DA5AE] flex items-center gap-1 mt-0.5">
                           <MapPin size={10} /> {s.address}
                         </p>
@@ -353,15 +396,12 @@ export default function PrenotazionePage() {
                 </div>
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-widest text-[#57636C] mb-1.5">Fascia oraria *</label>
-                  <select className={inputCls} value={fascia} onChange={(e) => setFascia(e.target.value)} required>
-                    <option value="">Seleziona</option>
-                    {FASCE_ORARIE.map((f) => <option key={f} value={f}>{f}</option>)}
-                  </select>
+                  <FasciaSelect value={fascia} onChange={setFascia} />
                 </div>
               </div>
 
               <div className="flex gap-3">
-                <button onClick={goPrev} className="btn-outline-navy flex items-center gap-1">
+                <button onClick={goPrev} className="inline-flex items-center gap-1 text-sm font-semibold text-[#57636C] hover:text-[#111] transition-colors">
                   <ArrowLeft size={14} /> Indietro
                 </button>
                 <button onClick={goNext} disabled={!canGoFromSede}
@@ -375,19 +415,19 @@ export default function PrenotazionePage() {
           {/* ── STEP 3: Conferma ── */}
           {step === "conferma" && (
             <div className="space-y-6">
-              <h2 className="text-xl font-black text-[#001D3D]">Riepilogo prenotazione</h2>
+              <h2 className="text-xl font-black text-[#111]">Riepilogo prenotazione</h2>
 
               <div className="space-y-3">
                 <div className="border border-[#E5E7EB] rounded-xl p-4 bg-white">
                   <p className="text-[10px] font-bold uppercase tracking-widest text-[#9DA5AE] mb-2">I tuoi dati</p>
-                  <p className="text-sm font-bold text-[#001D3D]">{dati.nome} {dati.cognome}</p>
+                  <p className="text-sm font-bold text-[#111]">{dati.nome} {dati.cognome}</p>
                   <p className="text-sm text-[#57636C]">{dati.email} · {dati.telefono}</p>
                   {dati.note && <p className="text-sm text-[#9DA5AE] mt-1 italic">{dati.note}</p>}
                 </div>
 
                 <div className="border border-[#E5E7EB] rounded-xl p-4 bg-white">
                   <p className="text-[10px] font-bold uppercase tracking-widest text-[#9DA5AE] mb-2">Appuntamento</p>
-                  <p className="text-sm font-bold text-[#001D3D]">{SERVIZI.find((s) => s.id === servizio)?.label}</p>
+                  <p className="text-sm font-bold text-[#111]">{SERVIZI.find((s) => s.id === servizio)?.label}</p>
                   <p className="text-sm text-[#57636C] flex items-center gap-1.5 mt-1">
                     <MapPin size={13} className="text-[#FFC300]" /> {sedeSel?.label} — {sedeSel?.address}
                   </p>
@@ -402,7 +442,7 @@ export default function PrenotazionePage() {
               </div>
 
               <div className="flex gap-3">
-                <button onClick={goPrev} className="btn-outline-navy flex items-center gap-1">
+                <button onClick={goPrev} className="inline-flex items-center gap-1 text-sm font-semibold text-[#57636C] hover:text-[#111] transition-colors">
                   <ArrowLeft size={14} /> Indietro
                 </button>
                 <button onClick={handleConfirm} disabled={loading}
