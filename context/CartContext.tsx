@@ -30,7 +30,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("spiezia_cart", JSON.stringify(items));
+    try {
+      localStorage.setItem("spiezia_cart", JSON.stringify(items));
+    } catch { /* Safari private mode or storage full */ }
   }, [items]);
 
   const count = items.reduce((s, i) => s + i.quantita, 0);

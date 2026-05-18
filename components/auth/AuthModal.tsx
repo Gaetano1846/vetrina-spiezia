@@ -41,10 +41,20 @@ export default function AuthModal({ isOpen, onClose }: Props) {
       if (msg.includes("user-not-found") || msg.includes("wrong-password") || msg.includes("invalid-credential"))
         toast.error("Email o password non corretti");
       else if (msg.includes("email-already-in-use"))
-        toast.error("Email già registrata");
+        toast.error("Email già registrata. Prova ad accedere.");
       else if (msg.includes("weak-password"))
         toast.error("Password troppo corta (min. 6 caratteri)");
-      else toast.error(msg);
+      else if (msg.includes("invalid-email"))
+        toast.error("Indirizzo email non valido");
+      else if (msg.includes("user-disabled"))
+        toast.error("Account disabilitato. Contattaci per assistenza.");
+      else if (msg.includes("too-many-requests"))
+        toast.error("Troppi tentativi. Riprova tra qualche minuto.");
+      else if (msg.includes("network-request-failed"))
+        toast.error("Errore di connessione. Controlla la rete e riprova.");
+      else if (msg.includes("popup-blocked"))
+        toast.error("Il popup di accesso è stato bloccato. Abilita i popup per questo sito.");
+      else toast.error("Si è verificato un errore. Riprova.");
     } finally {
       setLoading(false);
     }

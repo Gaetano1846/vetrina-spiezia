@@ -1,12 +1,17 @@
-"use client";
+import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { MapPin, Search, Star, ArrowRight, Loader2, Car, Zap, CalendarDays, ShoppingCart as ShoppingCart2 } from "lucide-react";
-import VehicleSearch from "@/components/ui/VehicleSearch";
-import { dimensionValues } from "@/lib/algolia";
-import Combobox from "@/components/ui/Combobox";
+import { MapPin, Search, Star, ArrowRight, Zap, Car, CalendarDays, ShoppingCart as ShoppingCart2 } from "lucide-react";
+import HomeHero from "@/components/ui/HomeHero";
+
+export const metadata: Metadata = {
+  title: "Spiezia Tyres — Pneumatici Online | 4 Sedi Campania e Lazio",
+  description: "Acquista pneumatici online da Spiezia Tyres S.p.A.: auto, SUV, moto e veicoli agricoli. 4 sedi in Campania e Lazio. Prezzi competitivi, montaggio express. Prenota subito.",
+  openGraph: {
+    title: "Spiezia Tyres — Pneumatici Online",
+    description: "Oltre 30 anni di esperienza. Michelin, Pirelli, Continental, Bridgestone e molti altri. Prenota il montaggio in 1 minuto.",
+  },
+};
 
 /* ─── Locations ─── */
 const LOCATIONS = [
@@ -14,12 +19,6 @@ const LOCATIONS = [
   { city: "Volla",        address: "Via Palazziello, 73",      maps: "https://www.google.com/maps/dir/40.9292509,14.5072726/spiezia+tyres+volla/@40.9191238,14.2492527,11z/data=!3m1!4b1!4m9!4m8!1m1!4e1!1m5!1m1!1s0x133ba8f1823dabbb:0x5593c595afb22bd8!2m2!1d14.3416487!2d40.8875763?entry=ttu&g_ep=EgoyMDI1MDkxMC4wIKXMDSoASAFQAw%3D%3D" },
   { city: "Portici",      address: "Via S. Cristoforo, 93",    maps: "https://www.google.com/maps?rlz=1C1ONGR_itIT1037IT1037&sxsrf=AB5stBjW_3CCfdtN8rqX-bEFmtDjE_6cKg:1690991235852&uact=5&gs_lp=Egxnd3Mtd2l6LXNlcnAiFXNwaWV6aWEgdHlyZXMgcG9ydGljaTIHECMYigUYJzILEC4YgAQYxwEYrwEyAhAmMhoQLhiABBjHARivARiXBRjcBBjeBBjgBNgBAUiRDFDEBFjLCnACeAGQAQCYAXmgAfYFqgEDMC43uAEDyAEA-AEBwgIKEAAYRxjWBBiwA8ICBBAjGCfCAhAQLhiABBgUGIcCGMcBGK8BwgIJEAAYFhgeGPEEwgIGEAAYFhgewgIfEC4YgAQYFBiHAhjHARivARiXBRjcBBjeBBjgBNgBAeIDBBgAIEGIBgGQBga6BgYIARABGBQ&um=1&ie=UTF-8&fb=1&gl=it&sa=X&geocode=KceqU7appzsTMcu6GU8hZOw3&daddr=Via+S.+Cristoforo,+93,+80055+Portici+NA" },
   { city: "Fiano Romano", address: "Via Procoio, 41A",         maps: "https://www.google.com/maps/place/Via+Procoio,+41,+00065+Fiano+Romano+RM/@42.1560406,12.6166334,18z/data=!3m1!4b1!4m6!3m5!1s0x132f6d59d6ec1a2b:0xa6164bc7110fcd44!8m2!3d42.1560394!4d12.6180815!16s%2Fg%2F11k5jpbngn?entry=tts" },
-];
-
-/* ─── Popular sizes ─── */
-const POPULAR_SIZES = [
-  "205/55 R16","215/60 R16","225/45 R17","195/55 R16","205/45 R17",
-  "175/65 R14","205/60 R16","225/40 R18","225/50 R17",
 ];
 
 /* ─── Services ─── */
@@ -37,151 +36,6 @@ const REVIEWS = [
   { name: "I-TEAM SOLUTION S.R.L.", text: "Prezzi e qualità dei servizi ottimo. Una struttura davvero enorme e dalla mole di clientela che si trova andando lì si capisce che nella zona sia molto quotato. Hanno personale davvero accogliente e gentilissimo con una sala d'attesa e il personale operativo davvero professionale e disponibili." },
 ];
 
-/* ─── Hero search panel ─── */
-function HeroSearch() {
-  const router = useRouter();
-  const [tab, setTab] = useState<"misura" | "auto">("misura");
-  const [larghezze, setLarghezze] = useState<string[]>([]);
-  const [altezze, setAltezze] = useState<string[]>([]);
-  const [diametri, setDiametri] = useState<string[]>([]);
-  const [L, setL] = useState(""); const [A, setA] = useState(""); const [D, setD] = useState("");
-  const [stagione, setStagione] = useState<"Estive" | "Invernali" | "4-Stagioni" | "">("");
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => { dimensionValues("Larghezza").then(setLarghezze); }, []);
-  useEffect(() => {
-    if (L) dimensionValues("Altezza", L).then(setAltezze);
-    else { setAltezze([]); setA(""); setD(""); }
-  }, [L]);
-  useEffect(() => {
-    if (L && A) dimensionValues("Diametro", L, A).then(setDiametri);
-    else { setDiametri([]); setD(""); }
-  }, [L, A]);
-
-  function handleSearch() {
-    setLoading(true);
-    const params = new URLSearchParams();
-    if (L) params.set("larghezza", L);
-    if (A) params.set("altezza", A);
-    if (D) params.set("diametro", D);
-    if (stagione) params.set("stagioni", stagione);
-    router.push(`/prodotti?${params.toString()}`);
-  }
-
-  return (
-    <div className="bg-white rounded-2xl shadow-[0_8px_40px_rgba(0,0,0,0.15)] p-5 w-full">
-      {/* Tabs — segmented control */}
-      <div className="flex gap-1 bg-[#F1F4F8] rounded-xl p-1 mb-5">
-        {(["misura", "auto"] as const).map((t) => (
-          <button
-            key={t}
-            onClick={() => setTab(t)}
-            className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all duration-200 ${
-              tab === t
-                ? "bg-[#111] text-white shadow-sm"
-                : "text-[#555] hover:text-[#111]"
-            }`}
-          >
-            {t === "misura" ? "Cerca per Misura" : "Cerca per Auto"}
-          </button>
-        ))}
-      </div>
-
-      {tab === "misura" ? (
-        <div className="space-y-3">
-          <div className="grid grid-cols-3 gap-2">
-            <div>
-              <p className="text-[10px] font-black uppercase tracking-widest text-[#9DA5AE] mb-1.5">Largh.</p>
-              <Combobox
-                value={L}
-                onChange={(v) => { setL(v); setA(""); setD(""); }}
-                options={larghezze}
-                popular={["195","205","215","225","175","185","235","245"]}
-                placeholder="205"
-              />
-            </div>
-            <div>
-              <p className="text-[10px] font-black uppercase tracking-widest text-[#9DA5AE] mb-1.5">Alt.</p>
-              <Combobox
-                value={A}
-                onChange={(v) => { setA(v); setD(""); }}
-                options={altezze}
-                popular={["55","65","45","50","60","40","35","70"]}
-                placeholder="55"
-                disabled={!L}
-              />
-            </div>
-            <div>
-              <p className="text-[10px] font-black uppercase tracking-widest text-[#9DA5AE] mb-1.5">Diam.</p>
-              <Combobox
-                value={D}
-                onChange={setD}
-                options={diametri}
-                popular={["16","17","15","18","14","19","20"]}
-                placeholder="R16"
-                prefix="R"
-                disabled={!A}
-              />
-            </div>
-          </div>
-
-          {/* Stagione pills */}
-          <div>
-            <p className="text-[10px] font-black uppercase tracking-widest text-[#9DA5AE] mb-1.5">Stagione</p>
-            <div className="grid grid-cols-3 gap-2">
-              {(["Estive","Invernali","4-Stagioni"] as const).map((s) => (
-                <button
-                  key={s}
-                  onClick={() => setStagione(stagione === s ? "" : s)}
-                  className={`py-2 rounded-lg text-xs font-bold border-2 bg-white transition-all text-center ${
-                    stagione === s
-                      ? "border-[#FFC300] text-[#111] bg-[#FFC300]/5"
-                      : "border-[#E5E7EB] text-[#555] hover:border-[#FFC300]"
-                  }`}
-                >
-                  {s === "4-Stagioni" ? "4 Stagioni" : s}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* CTA */}
-          <button
-            onClick={handleSearch}
-            className="w-full bg-[#FFC300] hover:bg-[#E6B000] text-[#111] font-black py-3 sm:py-3.5 rounded-xl flex items-center justify-center gap-2 text-xs sm:text-sm transition-colors shadow-[0_4px_16px_rgba(255,195,0,0.4)]"
-          >
-            {loading ? <Loader2 size={18} className="animate-spin" /> : <Search size={18} />}
-            Cerca Pneumatici
-          </button>
-        </div>
-      ) : (
-        <VehicleSearch />
-      )}
-
-      {/* Popular sizes */}
-      <div className="mt-4 pt-4 border-t border-[#f0f0f0]">
-        <p className="text-[10px] font-black uppercase tracking-widest text-[#9DA5AE] mb-2">Misure popolari</p>
-        <div className="grid grid-cols-3 gap-1.5">
-          {POPULAR_SIZES.map((s) => {
-            const [wh, r] = s.split(" ");
-            const [w, h] = wh.split("/");
-            return (
-              <button
-                key={s}
-                onClick={() => router.push(`/prodotti?larghezza=${w}&altezza=${h}&diametro=${r.replace("R","")}`)}
-                className="text-[11px] font-mono font-semibold px-2 py-1.5 rounded-lg border border-[#E5E7EB] text-[#555] hover:border-[#FFC300] hover:text-[#111] transition-colors text-center"
-              >
-                {s}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ─── Page ─── */
 export default function HomePage() {
   return (
     <>
@@ -189,12 +43,10 @@ export default function HomePage() {
           HERO — dark bg photo + white card
       ══════════════════════════════════════ */}
       <section className="relative min-h-[700px] flex items-center bg-[#111]">
-        {/* Background overlay with tire texture feel */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#0a0a0a] via-[#1a1a1a] to-[#0d0d0d]" />
         <div className="absolute inset-0 opacity-20" style={{
           backgroundImage: "radial-gradient(circle at 20% 50%, #FFC300 0%, transparent 50%), radial-gradient(circle at 80% 20%, #FFC300 0%, transparent 40%)",
         }} />
-        {/* Subtle tire tread pattern */}
         <div className="absolute inset-0 opacity-5" style={{
           backgroundImage: "repeating-linear-gradient(45deg, #fff 0px, #fff 1px, transparent 1px, transparent 20px), repeating-linear-gradient(-45deg, #fff 0px, #fff 1px, transparent 1px, transparent 20px)",
         }} />
@@ -206,7 +58,6 @@ export default function HomePage() {
               {/* ── LEFT: Brand + USPs + Locations ── */}
               <div className="p-5 sm:p-8 lg:p-10 border-b lg:border-b-0 lg:border-r border-[#f0f0f0] flex flex-col order-2 lg:order-1">
 
-                {/* Brand mark — desktop only (mobile version is in search panel) */}
                 <div className="hidden lg:flex items-center gap-4 mb-5 sm:mb-8">
                   <div className="w-1.5 h-14 bg-[#FFC300] rounded-full flex-shrink-0" />
                   <div>
@@ -250,7 +101,7 @@ export default function HomePage() {
                         className="flex items-center gap-2 px-3 py-2.5 bg-[#F8F9FA] border border-[#eee] rounded-xl hover:border-[#FFC300] hover:bg-[#fffbeb] transition-all group">
                         <div className="w-1.5 h-1.5 rounded-full bg-[#FFC300] flex-shrink-0 group-hover:scale-125 transition-transform" />
                         <div className="min-w-0">
-                          <p className="text-xs font-black text-[#001D3D] truncate">{loc.city}</p>
+                          <p className="text-xs font-black text-[#111] truncate">{loc.city}</p>
                           <p className="text-[10px] text-[#9DA5AE] leading-tight truncate">{loc.address}</p>
                         </div>
                       </a>
@@ -277,7 +128,7 @@ export default function HomePage() {
                 </div>
                 <p className="text-[10px] font-black uppercase tracking-widest text-[#FFC300] mb-1">Trova le gomme giuste</p>
                 <h2 className="text-xl font-black text-[#111] mb-5">Cerca i tuoi pneumatici</h2>
-                <HeroSearch />
+                <HomeHero />
               </div>
             </div>
           </div>
@@ -295,12 +146,11 @@ export default function HomePage() {
             Approfitta delle convenienze di Spiezia Tyres: scopri tutte le offerte su pneumatici e servizi per la tua auto!
           </p>
 
-          {/* Promo cards */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {[
-              { label: "FALKEN",       title: "Ogni 4 pneumatici Falken ≥16\" fino a 20€ in buoni carburante", cat: "Estive" },
-              { label: "INVERNALI",    title: "Gomme invernali già disponibili — prepara l'auto per il freddo",  cat: "Invernali" },
-              { label: "PRENOTA",      title: "Prenota il montaggio nelle nostre 4 sedi — Nola, Volla, Portici, Fiano Romano", cat: "Tutti" },
+              { label: "FALKEN",    title: "Ogni 4 pneumatici Falken ≥16\" fino a 20€ in buoni carburante", cat: "Estive" },
+              { label: "INVERNALI", title: "Gomme invernali già disponibili — prepara l'auto per il freddo",  cat: "Invernali" },
+              { label: "PRENOTA",   title: "Prenota il montaggio nelle nostre 4 sedi — Nola, Volla, Portici, Fiano Romano", cat: "Tutti" },
             ].map((promo) => (
               <div key={promo.title} className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl overflow-hidden group hover:border-[#FFC300]/40 transition-all">
                 <div className="h-40 bg-gradient-to-br from-[#222] to-[#111] flex items-center justify-center relative overflow-hidden">
@@ -386,12 +236,12 @@ export default function HomePage() {
 
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {[
-              { label: "Gomme Estive",        href: "/prodotti?stagioni=Estive",     img: "/categories/gomme-estive.png",    sub: "Per prestazioni in estate"      },
-              { label: "Gomme Invernali",     href: "/prodotti?stagioni=Invernali",  img: "/categories/gomme-invernali.png", sub: "Per sicurezza in inverno"        },
-              { label: "4 Stagioni",          href: "/prodotti?stagioni=4-Stagioni", img: "/categories/gomme-4stagioni.png", sub: "Tutto l'anno senza pensieri"     },
-              { label: "Pneumatici Auto",     href: "/prodotti?cat=auto",            img: "/categories/auto.png",            sub: "Per berline, utilitarie e city"  },
-              { label: "Pneumatici Agricoli", href: "/prodotti?cat=agro",            img: "/categories/agro.png",            sub: "Per trattori e macchine agricole"},
-              { label: "Pneumatici Autocarro",href: "/prodotti?cat=autocarro",       img: "/categories/autocarro.png",       sub: "Per camion, autobus e furgoni"   },
+              { label: "Gomme Estive",         href: "/prodotti?stagioni=Estive",     img: "/categories/gomme-estive.png",    sub: "Per prestazioni in estate"      },
+              { label: "Gomme Invernali",      href: "/prodotti?stagioni=Invernali",  img: "/categories/gomme-invernali.png", sub: "Per sicurezza in inverno"        },
+              { label: "4 Stagioni",           href: "/prodotti?stagioni=4-Stagioni", img: "/categories/gomme-4stagioni.png", sub: "Tutto l'anno senza pensieri"     },
+              { label: "Pneumatici Auto",      href: "/prodotti?cat=auto",            img: "/categories/auto.png",            sub: "Per berline, utilitarie e city"  },
+              { label: "Pneumatici Agricoli",  href: "/prodotti?cat=agro",            img: "/categories/agro.png",            sub: "Per trattori e macchine agricole"},
+              { label: "Pneumatici Autocarro", href: "/prodotti?cat=autocarro",       img: "/categories/autocarro.png",       sub: "Per camion, autobus e furgoni"   },
             ].map((cat) => (
               <Link
                 key={cat.label}
@@ -502,8 +352,8 @@ export default function HomePage() {
           <div className="grid md:grid-cols-3 gap-5">
             {[
               { n: "01", title: "Scegli il Pneumatico", LucideIcon: Search,        image: "/steps/scegli-pneumatico.png", desc: "Cerca per misura o per veicolo. Filtra per stagione, marca e prezzo. Trova la gomma giusta per la tua auto.", gold: false },
-              { n: "02", title: "Aggiungi alla Lista",  LucideIcon: ShoppingCart2, image: "/steps/aggiungi-lista.png", desc: "Seleziona i pneumatici che ti interessano, scegli la quantità e componi la tua lista da presentare in sede.", gold: false },
-              { n: "03", title: "Prenota in Sede",      LucideIcon: CalendarDays,  image: "/steps/prenota-sede.png", desc: "Contattaci o vieni direttamente in uno dei nostri 4 punti vendita. Il personale provvederà al montaggio.", gold: false },
+              { n: "02", title: "Aggiungi alla Lista",  LucideIcon: ShoppingCart2, image: "/steps/aggiungi-lista.png",    desc: "Seleziona i pneumatici che ti interessano, scegli la quantità e componi la tua lista da presentare in sede.", gold: false },
+              { n: "03", title: "Prenota in Sede",      LucideIcon: CalendarDays,  image: "/steps/prenota-sede.png",     desc: "Contattaci o vieni direttamente in uno dei nostri 4 punti vendita. Il personale provvederà al montaggio.", gold: false },
             ].map((step) => (
               <div
                 key={step.n}
@@ -553,7 +403,7 @@ export default function HomePage() {
             <p className="text-[#5a4400] text-sm mt-1">Chiamaci in sede o scrivici, rispondiamo subito.</p>
           </div>
           <div className="flex items-center gap-4">
-            <a href="/contatti" className="inline-flex items-center justify-center gap-2 font-bold text-sm text-[#001D3D] bg-white hover:bg-[#F1F4F8] px-5 py-2.5 rounded-lg shadow-sm active:scale-[0.98] transition-all">
+            <a href="/contatti" className="inline-flex items-center justify-center gap-2 font-bold text-sm text-[#111] bg-white hover:bg-[#F1F4F8] px-5 py-2.5 rounded-lg shadow-sm active:scale-[0.98] transition-all">
               Contattaci
             </a>
           </div>

@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { algoliasearch } from "algoliasearch";
 import type { Prodotto } from "./types";
 
@@ -226,14 +227,14 @@ export async function searchProdotti(opts: SearchOpts = {}): Promise<SearchResul
   return await _search(INDEX, opts);
 }
 
-export async function getProdottoById(id: string): Promise<Prodotto | null> {
+export const getProdottoById = cache(async function getProdottoById(id: string): Promise<Prodotto | null> {
   try {
     const res = await client().getObject<AlgoliaHit>({ indexName: INDEX, objectID: id });
     return mapAlgoliaHit(res as AlgoliaHit);
   } catch {
     return null;
   }
-}
+});
 
 export async function dimensionValues(
   field: "Larghezza" | "Altezza" | "Diametro",

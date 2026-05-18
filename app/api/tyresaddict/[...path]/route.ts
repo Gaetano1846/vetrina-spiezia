@@ -2,9 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import https from "https";
 
 const BASE = "https://tyresaddict.ru/api/fitment";
-const API_KEY = process.env.NEXT_PUBLIC_TYRESADDICT_KEY ?? "3e9aace9642e6f9183e7203484e9643b47932cc9";
+const API_KEY = process.env.TYRESADDICT_KEY;
 
-const agent = new https.Agent({ rejectUnauthorized: false });
+// Why: tyresaddict.ru uses a self-signed cert that fails validation in Node on some hosts.
+// Disabled only in non-production environments to avoid silently bypassing TLS in prod.
+const agent = new https.Agent({
+  rejectUnauthorized: process.env.NODE_ENV === "production",
+});
 
 function fetchUpstream(url: string): Promise<unknown> {
   return new Promise((resolve, reject) => {
@@ -27,6 +31,11 @@ export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ path: string[] }> }
 ) {
+  if (!API_KEY) {
+    console.error("[tyresaddict proxy] TYRESADDICT_KEY env var not set");
+    return NextResponse.json({ result: false, message: "Servizio veicoli non configurato" }, { status: 503 });
+  }
+
   const { path } = await params;
   const segment = path.join("/");
   const incomingSearch = req.nextUrl.searchParams.toString();

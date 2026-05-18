@@ -1,6 +1,7 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import toast from "react-hot-toast";
 import { ChevronRight, ChevronDown, Check, Loader2, ArrowLeft, MapPin, Calendar, Phone, Mail, User, ShoppingCart } from "lucide-react";
 import CalendarPicker from "@/components/ui/CalendarPicker";
 import { useCart } from "@/context/CartContext";
@@ -44,6 +45,9 @@ const SERVIZI = [
 ];
 
 const inputCls = "w-full border border-[#E5E7EB] rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#FFC300] focus:ring-2 focus:ring-[#FFC300]/20 transition-all bg-white";
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PHONE_RE = /^(\+39\s?)?[0-9\s\-]{8,15}$/;
 
 type DatiForm = { nome: string; cognome: string; email: string; telefono: string; note: string; };
 
@@ -108,6 +112,7 @@ export default function PrenotazionePage() {
   const [fascia, setFascia]     = useState("");
   const [loading, setLoading]   = useState(false);
   const [done, setDone]         = useState(false);
+  const [gdpr, setGdpr]         = useState(false);
 
   /* ── Empty cart ── */
   if (!items.length && !done) {
@@ -153,7 +158,9 @@ export default function PrenotazionePage() {
   const goNext  = () => setStep(step === "dati" ? "sede" : "conferma");
   const goPrev  = () => setStep(step === "conferma" ? "sede" : "dati");
 
-  const canGoFromDati = dati.nome && dati.cognome && dati.email && dati.telefono;
+  const emailValid = EMAIL_RE.test(dati.email);
+  const phoneValid = PHONE_RE.test(dati.telefono);
+  const canGoFromDati = dati.nome && dati.cognome && emailValid && phoneValid && gdpr;
   const canGoFromSede = sede && servizio && data && fascia;
 
   async function handleConfirm() {
@@ -215,7 +222,7 @@ export default function PrenotazionePage() {
       setDone(true);
     } catch (err) {
       console.error("Errore creazione appuntamento:", err);
-      alert("Si è verificato un errore. Riprova o contattaci al +39 081 511 5011.");
+      toast.error("Si è verificato un errore. Riprova o contattaci al +39 081 511 5011.");
     } finally {
       setLoading(false);
     }
@@ -311,6 +318,9 @@ export default function PrenotazionePage() {
                   </label>
                   <input className={inputCls} type="email" value={dati.email}
                     onChange={(e) => setDati((p) => ({ ...p, email: e.target.value }))} required />
+                  {dati.email && !emailValid && (
+                    <p className="text-xs text-red-500 mt-1">Inserisci un indirizzo email valido</p>
+                  )}
                 </div>
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-widest text-[#57636C] mb-1.5">
@@ -318,6 +328,9 @@ export default function PrenotazionePage() {
                   </label>
                   <input className={inputCls} type="tel" value={dati.telefono}
                     onChange={(e) => setDati((p) => ({ ...p, telefono: e.target.value }))} required />
+                  {dati.telefono && !phoneValid && (
+                    <p className="text-xs text-red-500 mt-1">Inserisci un numero di telefono valido</p>
+                  )}
                 </div>
                 <div className="sm:col-span-2">
                   <label className="block text-xs font-bold uppercase tracking-widest text-[#57636C] mb-1.5">Note aggiuntive</label>
@@ -325,6 +338,26 @@ export default function PrenotazionePage() {
                     value={dati.note} onChange={(e) => setDati((p) => ({ ...p, note: e.target.value }))} />
                 </div>
               </div>
+              <label className="flex items-start gap-3 cursor-pointer group">
+                <input
+                  type="checkbox"
+                  checked={gdpr}
+                  onChange={(e) => setGdpr(e.target.checked)}
+                  className="mt-0.5 w-4 h-4 accent-[#FFC300] flex-shrink-0 cursor-pointer"
+                />
+                <span className="text-xs text-[#57636C] leading-relaxed">
+                  Ho letto e accetto la{" "}
+                  <Link href="/privacy" target="_blank" className="text-[#FFC300] hover:text-[#92700A] font-semibold underline underline-offset-2">
+                    Privacy Policy
+                  </Link>{" "}
+                  e i{" "}
+                  <Link href="/termini" target="_blank" className="text-[#FFC300] hover:text-[#92700A] font-semibold underline underline-offset-2">
+                    Termini di servizio
+                  </Link>
+                  . *
+                </span>
+              </label>
+
               <button onClick={goNext} disabled={!canGoFromDati}
                 className={`btn-gold flex items-center gap-2 ${!canGoFromDati ? "opacity-40 cursor-not-allowed" : ""}`}>
                 Scegli la sede <ChevronRight size={16} />

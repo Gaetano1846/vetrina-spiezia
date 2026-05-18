@@ -316,7 +316,7 @@ export default function ProductDetailClient({ prodotto: p }: Props) {
             {/* Brand / model / size */}
             <div className="mb-4">
               <div className="text-[10px] font-black uppercase tracking-widest text-[#FFC300] mb-0.5">{p.marca}</div>
-              <h1 className="text-xl sm:text-2xl font-black text-[#001D3D] leading-tight">{p.modello}</h1>
+              <h1 className="text-xl sm:text-2xl font-black text-[#111] leading-tight">{p.modello}</h1>
               <div className="font-mono text-[#57636C] mt-1 text-sm">
                 {misura}{indici ? ` ${indici}` : ""}
               </div>

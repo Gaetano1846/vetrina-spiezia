@@ -104,7 +104,7 @@ export default function FiltersPanel({ initialFilters, availableMarche, availabl
     if (newFilters.spedizione) params.set("spedizione", "1");
     else params.delete("spedizione");
     params.delete("page");
-    router.push(`/prodotti?${params.toString()}`);
+    router.replace(`/prodotti?${params.toString()}`);
     setMobileOpen(false);
   }
 
@@ -124,7 +124,7 @@ export default function FiltersPanel({ initialFilters, availableMarche, availabl
   function reset() {
     const empty: Filters = { larghezza: "", altezza: "", diametro: "", marche: [], stagioni: [], indiciVelocita: [], indiciCarico: [], spedizione: false };
     setFilters(empty);
-    router.push("/prodotti");
+    router.replace("/prodotti");
     setMobileOpen(false);
   }
 

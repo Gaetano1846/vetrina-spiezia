@@ -25,9 +25,31 @@ export default async function ProdottoPage({ params }: Props) {
   const prodotto = await getProdottoById(id);
   if (!prodotto) notFound();
 
+  const productSchema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: prodotto.titolo,
+    brand: { "@type": "Brand", name: prodotto.marca },
+    description: `${prodotto.titolo} — Pneumatico ${prodotto.stagione} per ${prodotto.categoria}. Misura: ${prodotto.larghezza}/${prodotto.altezza} R${prodotto.diametro}.`,
+    image: prodotto.immagine,
+    offers: {
+      "@type": "Offer",
+      priceCurrency: "EUR",
+      price: prodotto.prezzo.toFixed(2),
+      availability: prodotto.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+      seller: { "@type": "Organization", name: "Spiezia Tyres S.p.A." },
+    },
+  };
+
   return (
-    <Suspense fallback={<div className="min-h-screen" />}>
-      <ProductDetailClient prodotto={prodotto} />
-    </Suspense>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
+      />
+      <Suspense fallback={<div className="min-h-screen" />}>
+        <ProductDetailClient prodotto={prodotto} />
+      </Suspense>
+    </>
   );
 }

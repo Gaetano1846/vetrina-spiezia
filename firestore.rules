@@ -1,0 +1,30 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Bookings: authenticated users can create their own, read their own
+    match /Appuntamenti/{docId} {
+      allow create: if request.auth != null
+        && request.resource.data.keys().hasAll(["Cliente_Web", "Sede", "DataOra", "Stato"])
+        && request.resource.data.Stato == "In Attesa";
+      allow read: if request.auth != null
+        && resource.data.Cliente_Web.Email == request.auth.token.email;
+      allow update, delete: if false;
+    }
+
+    // Sede / Reparto lookup (read-only, no auth required)
+    match /Sede/{docId} {
+      allow read: if true;
+      allow write: if false;
+    }
+    match /Reparto/{docId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // Deny everything else
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

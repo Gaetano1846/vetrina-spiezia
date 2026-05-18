@@ -43,9 +43,30 @@ const SERVICES = [
   "Revisione auto",
 ];
 
+const organizationSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "Spiezia Tyres S.p.A.",
+  url: "https://spieziatyres.it",
+  logo: "https://spieziatyres.it/logo-spiezia.png",
+  telephone: "+390815115011",
+  email: "info@spieziatyres.it",
+  vatID: "IT07737141213",
+  address: [
+    { "@type": "PostalAddress", streetAddress: "Via Croce Del Papa 27/29", addressLocality: "Nola",         postalCode: "80035", addressCountry: "IT" },
+    { "@type": "PostalAddress", streetAddress: "Via Palazziello 73",        addressLocality: "Volla",        postalCode: "80040", addressCountry: "IT" },
+    { "@type": "PostalAddress", streetAddress: "Via S. Cristoforo 93",      addressLocality: "Portici",      postalCode: "80055", addressCountry: "IT" },
+    { "@type": "PostalAddress", streetAddress: "Via Procoio 41A",           addressLocality: "Fiano Romano", postalCode: "00065", addressCountry: "IT" },
+  ],
+};
+
 export default function ContattiPage() {
   return (
     <div className="bg-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+      />
 
       {/* ── Hero ── */}
       <section className="relative overflow-hidden border-b border-[#E5E7EB]">
