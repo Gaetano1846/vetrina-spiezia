@@ -58,6 +58,24 @@ function calcPfu(diametro: unknown): number {
   return (d * 10) % 10 === 5 ? 14.50 : 3.70;
 }
 
+// Base di prezzo GREZZA (prima del ricarico): il campo costo/listino usato dal Flutter
+// a seconda di marca/canale. Se vale 0 il prodotto non ha un prezzo reale (dato mancante).
+function sellableBaseRaw(h: AlgoliaHit): number {
+  const t24 = toBool(h.T24);
+  const marca = toStr(h.Marca).toUpperCase();
+  if (t24) return toNum(h.Prezzo_T24);
+  if (marca === "PIRELLI" || marca === "BRIDGESTONE") return toNum(h.Prezzo_Gommista);
+  return toNum(h.Prezzo_Acquisto);
+}
+
+// Un prodotto è VENDIBILE solo se la sua base di prezzo è > 0. Esclude i record con
+// Prezzo_Acquisto/Gommista/T24 mancante (=0): senza questo filtro verrebbero venduti
+// sotto costo (solo ricarico diametro) e apparirebbero come finte mega-offerte.
+// Usato da ogni entry-point prodotti (catalogo, offerte, dettaglio, sitemap).
+export function hasValidPrice(h: AlgoliaHit): boolean {
+  return sellableBaseRaw(h) > 0;
+}
+
 // Prezzo base di VENDITA, replica esatta del carrello Flutter (updateCarrello/checkCartUpdate):
 //  base = Prezzo_T24 (T24) | Prezzo_Gommista (Pirelli/Bridgestone) | Prezzo_Acquisto (altri)
 //  + ricarico fisso per diametro (regole per marca) + 12% se T24.
@@ -65,11 +83,7 @@ function flutterBasePrice(h: AlgoliaHit): number {
   const t24 = toBool(h.T24);
   const marca = toStr(h.Marca).toUpperCase();
   const d = parseFloat(toStr(h.Diametro));
-  let base = t24
-    ? toNum(h.Prezzo_T24)
-    : marca === "PIRELLI" || marca === "BRIDGESTONE"
-    ? toNum(h.Prezzo_Gommista)
-    : toNum(h.Prezzo_Acquisto);
+  let base = sellableBaseRaw(h);
   if (Number.isFinite(d)) {
     if (marca === "COMPASAL") {
       if (d <= 16) base += 20;
@@ -229,6 +243,7 @@ async function _search(indexName: string, opts: SearchOpts): Promise<SearchResul
     },
   });
   const hits = (res.hits as unknown as AlgoliaHit[])
+    .filter((h) => hasValidPrice(h)) // niente prodotti con base prezzo = 0
     .map((h) => mapAlgoliaHit(h))
     .filter((p) => {
       if (p.prezzo <= 0) return false;
@@ -284,6 +299,7 @@ export async function getOfferte(opts: { limit?: number; minDiscount?: number } 
   // perché spesso uno dei due è 0; sovrascriviamo prezzoPrecedente così il badge sconto compare.
   const offers: Offerta[] = [];
   for (const h of raw) {
+    if (!hasValidPrice(h)) continue; // niente prodotti con base prezzo = 0
     const p = mapAlgoliaHit(h);
     if (p.prezzo <= 0 || p.stock <= 0) continue;
     const t = (p.titolo + " " + p.modello).toLowerCase();
@@ -301,6 +317,7 @@ export async function getOfferte(opts: { limit?: number; minDiscount?: number } 
 export const getProdottoById = cache(async function getProdottoById(id: string): Promise<Prodotto | null> {
   try {
     const res = await client().getObject<AlgoliaHit>({ indexName: INDEX, objectID: id });
+    if (!hasValidPrice(res as AlgoliaHit)) return null; // prodotto senza prezzo reale → 404
     return mapAlgoliaHit(res as AlgoliaHit);
   } catch {
     return null;
@@ -365,6 +382,8 @@ export async function facetValues(attr: string, extra: SearchOpts = {}): Promise
 
 // Stesso filtro prezzo del catalogo: esclude i record "civetta" senza prezzo reale.
 const SITEMAP_FILTER = "Prezzo_Privato >= 20 OR Prezzo_T24 >= 20";
+// Attributi minimi per valutare hasValidPrice() lato client (oltre all'objectID).
+const SITEMAP_ATTRS = ["objectID", "T24", "Marca", "Prezzo_T24", "Prezzo_Gommista", "Prezzo_Acquisto"];
 
 // Enumera gli objectID dei prodotti EFFETTIVAMENTE VENDIBILI per la sitemap.
 // Usiamo l'indice `*_prezzo_privato_asc` (lo stesso del catalogo pubblico): contiene solo
@@ -377,9 +396,9 @@ export async function getAllProductIds(): Promise<string[]> {
   try {
     await client().browseObjects<AlgoliaHit>({
       indexName: INDEX_PRICE_ASC,
-      browseParams: { query: "", filters: SITEMAP_FILTER, attributesToRetrieve: ["objectID"], hitsPerPage: 1000 },
+      browseParams: { query: "", filters: SITEMAP_FILTER, attributesToRetrieve: SITEMAP_ATTRS, hitsPerPage: 1000 },
       aggregator: (res) => {
-        for (const h of res.hits as unknown as AlgoliaHit[]) if (h.objectID) ids.add(h.objectID);
+        for (const h of res.hits as unknown as AlgoliaHit[]) if (h.objectID && hasValidPrice(h)) ids.add(h.objectID);
       },
     });
     if (ids.size > 0) return [...ids];
@@ -397,12 +416,12 @@ export async function getAllProductIds(): Promise<string[]> {
           query: "",
           hitsPerPage: 1000,
           filters: SITEMAP_FILTER,
-          attributesToRetrieve: ["objectID"],
+          attributesToRetrieve: SITEMAP_ATTRS,
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           facetFilters: [[`Marca:${m}`]] as any,
         },
       });
-      for (const h of res.hits as unknown as AlgoliaHit[]) if (h.objectID) ids.add(h.objectID);
+      for (const h of res.hits as unknown as AlgoliaHit[]) if (h.objectID && hasValidPrice(h)) ids.add(h.objectID);
     }
   } catch (err) {
     console.error("[sitemap] fallback per-marca fallito:", err);
