@@ -38,30 +38,54 @@ function toBool(v: unknown): boolean {
   return false;
 }
 
-function calcPfu(diametro: unknown, catPath: string): number {
-  const d = typeof diametro === "string" ? parseInt(diametro, 10) : Number(diametro) || 0;
-  const cat = catPath.toLowerCase();
-  if (cat.includes("moto") || cat.includes("scooter")) {
-    if (d <= 15) return 0.90;
-    if (d <= 17) return 1.20;
-    return 1.50;
+// Replica esatta di calculatePFU del progetto Flutter (solo diametro, nessuna categoria).
+function calcPfu(diametro: unknown): number {
+  const d = typeof diametro === "string" ? parseFloat(diametro) : Number(diametro);
+  if (!Number.isFinite(d)) return 3.70;
+  const truck = [17.5, 19.5, 22.5, 24.5, 26.5, 30.0];
+  const car = [13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24];
+  if (truck.includes(d)) {
+    if (d === 17.5 || d === 19.5 || d === 22.5) return 14.50;
+    if (d === 24.5 || d === 26.5 || d === 30.0) return 18.70;
+    return 14.50;
   }
-  if (cat.includes("autocarro") || cat.includes("furgo") || cat.includes("commerc") || cat.includes("trasporto")) {
-    if (d <= 15) return 4.50;
-    if (d <= 17) return 5.50;
-    if (d <= 19) return 7.00;
-    return 9.00;
+  if (car.includes(d)) {
+    if (d === 13) return 1.00;
+    if (d === 14 || d === 15) return 1.80;
+    if (d >= 16 && d <= 19) return 2.60;
+    return 3.70;
   }
-  if (d <= 13) return 1.50;
-  if (d <= 14) return 1.80;
-  if (d <= 15) return 2.20;
-  if (d <= 16) return 2.50;
-  if (d <= 17) return 2.80;
-  if (d <= 18) return 3.20;
-  if (d <= 19) return 3.80;
-  if (d <= 20) return 4.30;
-  if (d <= 21) return 4.80;
-  return 5.50;
+  return (d * 10) % 10 === 5 ? 14.50 : 3.70;
+}
+
+// Prezzo base di VENDITA, replica esatta del carrello Flutter (updateCarrello/checkCartUpdate):
+//  base = Prezzo_T24 (T24) | Prezzo_Gommista (Pirelli/Bridgestone) | Prezzo_Acquisto (altri)
+//  + ricarico fisso per diametro (regole per marca) + 12% se T24.
+function flutterBasePrice(h: AlgoliaHit): number {
+  const t24 = toBool(h.T24);
+  const marca = toStr(h.Marca).toUpperCase();
+  const d = parseFloat(toStr(h.Diametro));
+  let base = t24
+    ? toNum(h.Prezzo_T24)
+    : marca === "PIRELLI" || marca === "BRIDGESTONE"
+    ? toNum(h.Prezzo_Gommista)
+    : toNum(h.Prezzo_Acquisto);
+  if (Number.isFinite(d)) {
+    if (marca === "COMPASAL") {
+      if (d <= 16) base += 20;
+      else if (d === 17) base += 23;
+      else if (d >= 18) base += 28;
+    } else if (marca === "PIRELLI" || marca === "BRIDGESTONE") {
+      if (d <= 18) base += 10;
+      else if (d >= 19) base += 15;
+    } else {
+      if (d <= 16) base += 15;
+      else if (d >= 17 && d <= 18) base += 20;
+      else if (d >= 19) base += 25;
+    }
+  }
+  if (t24) base *= 1.12;
+  return base;
 }
 
 function normalizeStagione(raw: unknown): Prodotto["stagione"] {
@@ -95,12 +119,12 @@ function applyIva(n: number) { return Math.round(n * IVA * 100) / 100; }
 
 export function mapAlgoliaHit(h: AlgoliaHit): Prodotto {
   const t24 = toBool(h.T24);
-  const prezzoNetto = t24 ? toNum(h.Prezzo_T24) : toNum(h.Prezzo_Privato);
-  const prezzo = applyIva(prezzoNetto);
+  // Prezzo di vendita con la formula esatta del Flutter (base costo/listino + ricarico diametro + IVA).
+  const prezzo = applyIva(flutterBasePrice(h));
   const prezzoPrec = applyIva(toNum(h.Prezzo_Gommista ?? h.Prezzo_Grossista, 0));
   const catPath = toStr(h._categoryPath ?? h.Categoria);
   const immagine = (toStr(h.Immagine) || toStr(h.Foto) || "").trim() || "https://media4.tyre-shopping.com/images_ts/tyre/nopic_nobr-MjM4NzA2-w300-h300-br1-24000238706.jpg";
-  const pfuNetto = (h.PFU != null && toNum(h.PFU) > 0) ? toNum(h.PFU) : calcPfu(h.Diametro, catPath);
+  const pfuNetto = (h.PFU != null && toNum(h.PFU) > 0) ? toNum(h.PFU) : calcPfu(h.Diametro);
 
   return {
     id: h.objectID,
