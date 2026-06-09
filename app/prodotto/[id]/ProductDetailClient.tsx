@@ -342,6 +342,10 @@ export default function ProductDetailClient({ prodotto: p }: Props) {
                 </span>
               </div>
               <p className="text-xs text-[#9DA5AE] mt-0.5">+ {formatPrice(p.pfu)} PFU (contributo ambientale)</p>
+              <p className="text-xs text-[#57636C] mt-1.5">
+                Treno da 4 gomme: <strong className="text-[#001D3D]">{formatPrice((p.prezzo + p.pfu) * 4)}</strong>{" "}
+                <span className="text-[#9DA5AE]">(incl. PFU)</span>
+              </p>
               <p className="text-xs text-[#249689] font-semibold mt-1">✓ Prezzo confermato in sede al momento del servizio</p>
             </div>
 
@@ -354,6 +358,14 @@ export default function ProductDetailClient({ prodotto: p }: Props) {
                 ? `Ultimi ${p.stock} pezzi`
                 : `Disponibile (${p.stock} pz in magazzino)`}
             </div>
+            {disponibile && (
+              <div className="flex items-center gap-2 text-xs text-[#57636C] mb-4 -mt-2">
+                <Clock size={13} className="text-[#FFC300] shrink-0" />
+                {p.t24
+                  ? "Disponibile su ordinazione — pronto in 7-12 giorni lavorativi"
+                  : "Pronto in sede — montaggio su appuntamento in circa 30 minuti"}
+              </div>
+            )}
 
             {/* Actions */}
             {disponibile ? (

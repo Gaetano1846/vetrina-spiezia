@@ -21,6 +21,7 @@ type AuthCtx = {
   signInGoogle: () => Promise<void>;
   logout: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
+  updateName: (name: string) => Promise<void>;
 };
 
 const AuthContext = createContext<AuthCtx | null>(null);
@@ -59,8 +60,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await sendPasswordResetEmail(auth, email);
   }
 
+  async function updateName(name: string) {
+    if (!auth.currentUser) return;
+    await updateProfile(auth.currentUser, { displayName: name });
+    // Clona l'istanza (preservando il prototype) per forzare il re-render dei consumer.
+    const u = auth.currentUser;
+    setUser(Object.assign(Object.create(Object.getPrototypeOf(u)), u) as User);
+  }
+
   return (
-    <AuthContext.Provider value={{ user, loading, signIn, signUp, signInGoogle, logout, resetPassword }}>
+    <AuthContext.Provider value={{ user, loading, signIn, signUp, signInGoogle, logout, resetPassword, updateName }}>
       {children}
     </AuthContext.Provider>
   );

@@ -8,7 +8,7 @@ import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
 import { formatPrice } from "@/lib/utils";
 import Image from "next/image";
-import { collection, addDoc, doc, Timestamp } from "firebase/firestore";
+import { collection, addDoc, doc, setDoc, Timestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
 type Step = "dati" | "sede" | "conferma";
@@ -113,6 +113,11 @@ export default function PrenotazionePage() {
   const [loading, setLoading]   = useState(false);
   const [done, setDone]         = useState(false);
   const [gdpr, setGdpr]         = useState(false);
+  const [fatt, setFatt]         = useState({
+    tipo: "Privato" as "Privato" | "Azienda",
+    ragioneSociale: "", piva: "", sdi: "", codiceFiscale: "",
+    via: "", citta: "", cap: "", provincia: "",
+  });
 
   /* ── Empty cart ── */
   if (!items.length && !done) {
@@ -160,7 +165,9 @@ export default function PrenotazionePage() {
 
   const emailValid = EMAIL_RE.test(dati.email);
   const phoneValid = PHONE_RE.test(dati.telefono);
-  const canGoFromDati = dati.nome && dati.cognome && emailValid && phoneValid && gdpr;
+  // Per le aziende ragione sociale + P.IVA sono obbligatorie; per i privati la fatturazione è opzionale.
+  const fattValid = fatt.tipo === "Privato" || (!!fatt.ragioneSociale.trim() && !!fatt.piva.trim());
+  const canGoFromDati = dati.nome && dati.cognome && emailValid && phoneValid && gdpr && fattValid;
   const canGoFromSede = sede && servizio && data && fascia;
 
   async function handleConfirm() {
@@ -194,8 +201,22 @@ export default function PrenotazionePage() {
         Titolo:        item.titolo,
       }));
 
+      const fatturazione = {
+        Tipo:           fatt.tipo,
+        RagioneSociale: fatt.ragioneSociale.trim(),
+        PIVA:           fatt.piva.trim(),
+        SDI:            fatt.sdi.trim(),
+        CodiceFiscale:  fatt.codiceFiscale.trim(),
+        Via:            fatt.via.trim(),
+        Citta:          fatt.citta.trim(),
+        CAP:            fatt.cap.trim(),
+        Provincia:      fatt.provincia.trim(),
+      };
+
       const appuntamento = {
         Accettatore:    null,
+        uid:            user?.uid ?? null,
+        Fatturazione:   fatturazione,
         Cliente_Web: {
           Nome:      dati.nome,
           Cognome:   dati.cognome,
@@ -218,6 +239,23 @@ export default function PrenotazionePage() {
       };
 
       await addDoc(collection(db, "Appuntamenti"), appuntamento);
+
+      // Salva i dati cliente per l'area account (storico fatturazione/indirizzi)
+      if (user?.uid) {
+        try {
+          await setDoc(
+            doc(db, "Vetrina_Clienti", user.uid),
+            {
+              uid: user.uid,
+              Nome: dati.nome, Cognome: dati.cognome, Email: dati.email, Telefono: dati.telefono,
+              Fatturazione: fatturazione,
+              AggiornatoIl: Timestamp.now(),
+            },
+            { merge: true }
+          );
+        } catch (e) { console.error("Vetrina_Clienti upsert:", e); }
+      }
+
       clearCart();
       setDone(true);
     } catch (err) {
@@ -338,6 +376,67 @@ export default function PrenotazionePage() {
                     value={dati.note} onChange={(e) => setDati((p) => ({ ...p, note: e.target.value }))} />
                 </div>
               </div>
+
+              {/* Dati di fatturazione — privato/azienda */}
+              <div className="border border-[#E5E7EB] rounded-xl p-4 bg-[#FAFBFC]">
+                <p className="text-xs font-bold uppercase tracking-widest text-[#57636C] mb-3">
+                  Dati di fatturazione <span className="text-[#9DA5AE] normal-case font-normal">(opzionale)</span>
+                </p>
+                <div className="flex gap-2 mb-4">
+                  {(["Privato", "Azienda"] as const).map((t) => (
+                    <button key={t} type="button" onClick={() => setFatt((p) => ({ ...p, tipo: t }))}
+                      className={`flex-1 py-2 rounded-lg text-sm font-bold border-2 transition-all ${
+                        fatt.tipo === t ? "border-[#111] bg-[#F1F4F8] text-[#111]" : "border-[#E5E7EB] bg-white text-[#9DA5AE] hover:border-[#111]/40"
+                      }`}>
+                      {t}
+                    </button>
+                  ))}
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {fatt.tipo === "Azienda" && (
+                    <>
+                      <div className="sm:col-span-2">
+                        <label className="block text-xs font-bold text-[#57636C] mb-1">Ragione sociale *</label>
+                        <input className={inputCls} value={fatt.ragioneSociale} onChange={(e) => setFatt((p) => ({ ...p, ragioneSociale: e.target.value }))} />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-[#57636C] mb-1">Partita IVA *</label>
+                        <input className={inputCls} value={fatt.piva} onChange={(e) => setFatt((p) => ({ ...p, piva: e.target.value }))} />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-[#57636C] mb-1">Codice destinatario / SDI</label>
+                        <input className={inputCls} value={fatt.sdi} onChange={(e) => setFatt((p) => ({ ...p, sdi: e.target.value }))} />
+                      </div>
+                    </>
+                  )}
+                  <div className="sm:col-span-2">
+                    <label className="block text-xs font-bold text-[#57636C] mb-1">Codice fiscale</label>
+                    <input className={inputCls} value={fatt.codiceFiscale} onChange={(e) => setFatt((p) => ({ ...p, codiceFiscale: e.target.value }))} />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className="block text-xs font-bold text-[#57636C] mb-1">Indirizzo</label>
+                    <input className={inputCls} placeholder="Via e numero civico" value={fatt.via} onChange={(e) => setFatt((p) => ({ ...p, via: e.target.value }))} />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-[#57636C] mb-1">Città</label>
+                    <input className={inputCls} value={fatt.citta} onChange={(e) => setFatt((p) => ({ ...p, citta: e.target.value }))} />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-bold text-[#57636C] mb-1">CAP</label>
+                      <input className={inputCls} value={fatt.cap} onChange={(e) => setFatt((p) => ({ ...p, cap: e.target.value }))} />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-[#57636C] mb-1">Prov.</label>
+                      <input className={inputCls} maxLength={2} value={fatt.provincia} onChange={(e) => setFatt((p) => ({ ...p, provincia: e.target.value.toUpperCase() }))} />
+                    </div>
+                  </div>
+                </div>
+                {fatt.tipo === "Azienda" && !fattValid && (
+                  <p className="text-xs text-red-500 mt-2">Per le aziende, ragione sociale e partita IVA sono obbligatorie.</p>
+                )}
+              </div>
+
               <label className="flex items-start gap-3 cursor-pointer group">
                 <input
                   type="checkbox"
