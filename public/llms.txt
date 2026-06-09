@@ -1,0 +1,42 @@
+# Spiezia Tyres — Pneumatici e officina
+
+> Spiezia Tyres S.p.A. è un rivenditore di pneumatici e officina italiano con oltre 30 anni di esperienza e 4 sedi fisiche tra Campania e Lazio (Nola, Volla, Portici, Fiano Romano). Il cliente cerca e seleziona i pneumatici online, poi prenota un appuntamento in una delle 4 sedi dove vengono montati e pagati in negozio: nessun anticipo, prezzo confermato al momento dell'appuntamento. Il catalogo copre pneumatici per auto, SUV, moto e veicoli agricoli dei principali marchi (Michelin, Pirelli, Continental, Bridgestone, Goodyear, Hankook e altri). Servizi in officina: montaggio, equilibratura, convergenza, cambio stagionale, cambio olio e filtri, revisione auto.
+
+## Come funziona (modello prenota-e-monta)
+1. Cerca e seleziona i pneumatici online per misura o per veicolo.
+2. Aggiungili alla selezione e prenota un appuntamento nella sede che preferisci.
+3. Paga e fai montare i pneumatici in sede — nessun anticipo, prezzo confermato all'appuntamento.
+
+## Pagine principali
+- [Home](https://spieziatyres.it/): ricerca pneumatici per misura o per veicolo
+- [Catalogo pneumatici](https://spieziatyres.it/prodotti): catalogo completo, filtrabile per misura, stagione e marca
+- [Chi siamo](https://spieziatyres.it/chi-siamo): storia, sedi e servizi dell'officina
+- [Contatti e sedi](https://spieziatyres.it/contatti): indirizzi, telefono e orari delle 4 sedi
+
+## Catalogo per stagione
+- [Pneumatici invernali](https://spieziatyres.it/prodotti?stagioni=Invernali): omologati M+S e 3PMSF per neve e ghiaccio
+- [Pneumatici estivi](https://spieziatyres.it/prodotti?stagioni=Estive): prestazioni su asciutto e bagnato in estate
+- [Pneumatici 4 stagioni](https://spieziatyres.it/prodotti?stagioni=4-Stagioni): un unico treno tutto l'anno
+
+## Catalogo per categoria
+- [Pneumatici auto](https://spieziatyres.it/prodotti?cat=auto): berline, utilitarie, SUV
+- [Pneumatici autocarro](https://spieziatyres.it/prodotti?cat=autocarro): camion, autobus e furgoni
+- [Pneumatici agricoli](https://spieziatyres.it/prodotti?cat=agro): trattori e macchine agricole
+
+## Marchi principali
+- [Michelin](https://spieziatyres.it/prodotti?marche=Michelin)
+- [Pirelli](https://spieziatyres.it/prodotti?marche=Pirelli)
+- [Continental](https://spieziatyres.it/prodotti?marche=Continental)
+- [Bridgestone](https://spieziatyres.it/prodotti?marche=Bridgestone)
+- [Goodyear](https://spieziatyres.it/prodotti?marche=Goodyear)
+- [Hankook](https://spieziatyres.it/prodotti?marche=Hankook)
+
+## Sedi (officine fisiche)
+- Nola — Via Croce Del Papa 27/29, 80035 Nola (NA)
+- Volla — Via Palazziello 73, 80040 Volla (NA)
+- Portici — Via S. Cristoforo 93, 80055 Portici (NA)
+- Fiano Romano — Via Procoio 41A, 00065 Fiano Romano (RM)
+
+## Contatti
+Telefono: +39 081 511 5011 · Email: info@spieziatyres.it
+Orari: Lun–Ven 08:30–13:30 e 14:30–19:00 · Sabato 08:30–13:30 · Domenica chiuso

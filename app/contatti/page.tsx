@@ -3,8 +3,9 @@ import Link from "next/link";
 import { MapPin, Phone, Mail, Clock, CalendarCheck, ChevronRight } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Contatti — Spiezia Tyres S.p.A.",
+  title: "Contatti",
   description: "Contatta Spiezia Tyres S.p.A. — 4 sedi tra Campania e Lazio. Chiama, scrivi o prenota online il tuo appuntamento per pneumatici e meccanica leggera.",
+  alternates: { canonical: "/contatti" },
 };
 
 const LOCATIONS = [

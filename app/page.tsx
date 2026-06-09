@@ -11,6 +11,7 @@ export const metadata: Metadata = {
     title: "Spiezia Tyres — Pneumatici Online",
     description: "Oltre 30 anni di esperienza. Michelin, Pirelli, Continental, Bridgestone e molti altri. Prenota il montaggio in 1 minuto.",
   },
+  alternates: { canonical: "/" },
 };
 
 /* ─── Locations ─── */
@@ -127,7 +128,12 @@ export default function HomePage() {
                   </div>
                 </div>
                 <p className="text-[10px] font-black uppercase tracking-widest text-[#FFC300] mb-1">Trova le gomme giuste</p>
-                <h2 className="text-xl font-black text-[#111] mb-5">Cerca i tuoi pneumatici</h2>
+                <h1 className="text-xl sm:text-2xl font-black text-[#111] leading-tight mb-1.5">
+                  Pneumatici online per auto, SUV, moto e veicoli agricoli
+                </h1>
+                <p className="text-sm text-[#57636C] leading-snug mb-5">
+                  Cerca per misura o per veicolo tra migliaia di gomme dei migliori brand. Prezzi competitivi e montaggio nelle nostre 4 sedi in Campania e Lazio.
+                </p>
                 <HomeHero />
               </div>
             </div>
@@ -236,12 +242,12 @@ export default function HomePage() {
 
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {[
-              { label: "Gomme Estive",         href: "/prodotti?stagioni=Estive",     img: "/categories/gomme-estive.png",    sub: "Per prestazioni in estate"      },
-              { label: "Gomme Invernali",      href: "/prodotti?stagioni=Invernali",  img: "/categories/gomme-invernali.png", sub: "Per sicurezza in inverno"        },
-              { label: "4 Stagioni",           href: "/prodotti?stagioni=4-Stagioni", img: "/categories/gomme-4stagioni.png", sub: "Tutto l'anno senza pensieri"     },
-              { label: "Pneumatici Auto",      href: "/prodotti?cat=auto",            img: "/categories/auto.png",            sub: "Per berline, utilitarie e city"  },
-              { label: "Pneumatici Agricoli",  href: "/prodotti?cat=agro",            img: "/categories/agro.png",            sub: "Per trattori e macchine agricole"},
-              { label: "Pneumatici Autocarro", href: "/prodotti?cat=autocarro",       img: "/categories/autocarro.png",       sub: "Per camion, autobus e furgoni"   },
+              { label: "Gomme Estive",         href: "/pneumatici-estivi",      img: "/categories/gomme-estive.png",    sub: "Per prestazioni in estate"      },
+              { label: "Gomme Invernali",      href: "/pneumatici-invernali",   img: "/categories/gomme-invernali.png", sub: "Per sicurezza in inverno"        },
+              { label: "4 Stagioni",           href: "/pneumatici-4-stagioni",  img: "/categories/gomme-4stagioni.png", sub: "Tutto l'anno senza pensieri"     },
+              { label: "Pneumatici Auto",      href: "/pneumatici-auto",        img: "/categories/auto.png",            sub: "Per berline, utilitarie e city"  },
+              { label: "Pneumatici Agricoli",  href: "/pneumatici-agricoli",    img: "/categories/agro.png",            sub: "Per trattori e macchine agricole"},
+              { label: "Pneumatici Autocarro", href: "/pneumatici-autocarro",   img: "/categories/autocarro.png",       sub: "Per camion, autobus e furgoni"   },
             ].map((cat) => (
               <Link
                 key={cat.label}
@@ -291,7 +297,7 @@ export default function HomePage() {
             ].map((b) => (
               <Link
                 key={b.nome}
-                href={`/prodotti?marche=${encodeURIComponent(b.nome)}`}
+                href={`/pneumatici-${b.nome.toLowerCase()}`}
                 title={b.nome}
                 className="grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-300"
               >

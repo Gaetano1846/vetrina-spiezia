@@ -4,8 +4,9 @@ import Link from "next/link";
 import { MapPin, Phone, Mail, CheckCircle, CalendarCheck, Shield, Clock } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Chi Siamo — Spiezia Tyres S.p.A.",
+  title: "Chi Siamo",
   description: "Spiezia Tyres S.p.A. — oltre 30 anni di esperienza nella vendita e montaggio di pneumatici. 4 sedi in Campania e Lazio.",
+  alternates: { canonical: "/chi-siamo" },
 };
 
 const LOCATIONS = [

@@ -4,7 +4,8 @@ import { ChevronRight } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Termini e Condizioni",
-  description: "Termini e condizioni di vendita di SpieziaTyres.",
+  description: "Termini e condizioni di vendita di Spiezia Tyres S.p.A.",
+  alternates: { canonical: "/termini" },
 };
 
 export default function TerminiPage() {

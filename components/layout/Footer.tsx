@@ -27,9 +27,9 @@ const SEDI = [
 
 const LINKS_SERVIZI = [
   { label: "Pneumatici",              href: "/prodotti" },
-  { label: "Pneumatici Invernali",    href: "/prodotti?stagioni=Invernali" },
-  { label: "Pneumatici Estivi",       href: "/prodotti?stagioni=Estive" },
-  { label: "Pneumatici 4 Stagioni",   href: "/prodotti?stagioni=4-Stagioni" },
+  { label: "Pneumatici Invernali",    href: "/pneumatici-invernali" },
+  { label: "Pneumatici Estivi",       href: "/pneumatici-estivi" },
+  { label: "Pneumatici 4 Stagioni",   href: "/pneumatici-4-stagioni" },
   { label: "Convergenza e geometria", href: "/chi-siamo" },
   { label: "Cambio olio e filtri",    href: "/chi-siamo" },
   { label: "Revisione auto",          href: "/chi-siamo" },

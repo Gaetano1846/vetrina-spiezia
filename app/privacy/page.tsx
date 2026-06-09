@@ -4,7 +4,8 @@ import { ChevronRight } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
-  description: "Informativa sulla privacy e trattamento dei dati personali di SpieziaTyres.",
+  description: "Informativa sulla privacy e trattamento dei dati personali di Spiezia Tyres S.p.A.",
+  alternates: { canonical: "/privacy" },
 };
 
 export default function PrivacyPage() {

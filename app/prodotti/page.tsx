@@ -5,12 +5,56 @@ import ProductCard from "@/components/products/ProductCard";
 import FiltersPanel from "@/components/products/FiltersPanel";
 import Link from "next/link";
 
-export const metadata: Metadata = {
-  title: "Catalogo Pneumatici",
-  description: "Sfoglia il catalogo pneumatici Spiezia Tyres. Filtra per misura, stagione e marca. Prenota il tuo appuntamento in sede.",
-};
+const SITE = "https://spieziatyres.it";
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
+
+// Metadata dinamici: ogni vista filtrata (marca / stagione / categoria / misura) ottiene
+// titolo, description e canonical propri → niente più contenuti duplicati su tutte le combinazioni.
+export async function generateMetadata({ searchParams }: { searchParams: SearchParams }): Promise<Metadata> {
+  const sp = await searchParams;
+  const larghezza = getString(sp.larghezza);
+  const altezza   = getString(sp.altezza);
+  const diametro  = getString(sp.diametro);
+  const marche    = getArray(sp.marche);
+  const stagioni  = getArray(sp.stagioni);
+  const cat       = getString(sp.cat);
+  const q         = getString(sp.q);
+
+  const misura = larghezza && altezza && diametro ? `${larghezza}/${altezza} R${diametro}` : "";
+  const stagioneLabel = stagioni[0] ? stagioni[0].replace("-", " ") : "";
+  const catLabel = cat ? cat.charAt(0).toUpperCase() + cat.slice(1) : "";
+
+  let title = "Catalogo Pneumatici";
+  if (misura) title = `Pneumatici ${misura}`;
+  else if (marche.length === 1) title = `Pneumatici ${marche[0]}`;
+  else if (stagioneLabel) title = `Pneumatici ${stagioneLabel}`;
+  else if (catLabel) title = `Pneumatici ${catLabel}`;
+  else if (q) title = `Pneumatici "${q}"`;
+
+  const descBits = [
+    misura && `misura ${misura}`,
+    marche.length ? `marca ${marche.join(", ")}` : "",
+    stagioneLabel && stagioneLabel.toLowerCase(),
+    catLabel && `per ${catLabel.toLowerCase()}`,
+  ].filter(Boolean);
+  const description = descBits.length
+    ? `Pneumatici ${descBits.join(", ")} disponibili da Spiezia Tyres. Confronta i prezzi e prenota il montaggio nelle 4 sedi in Campania e Lazio.`
+    : "Sfoglia il catalogo pneumatici Spiezia Tyres: auto, SUV, moto e agricoli. Filtra per misura, stagione e marca e prenota il montaggio in sede.";
+
+  // Canonical: include solo i filtri "di valore" (misura/marca/stagione/categoria),
+  // esclude page, q e ordinamento → consolida la paginazione sulla landing filtrata.
+  const cp = new URLSearchParams();
+  if (larghezza) cp.set("larghezza", larghezza);
+  if (altezza)   cp.set("altezza", altezza);
+  if (diametro)  cp.set("diametro", diametro);
+  if (marche.length)   cp.set("marche", marche.join(","));
+  if (stagioni.length) cp.set("stagioni", stagioni.join(","));
+  if (cat)             cp.set("cat", cat);
+  const canonical = cp.toString() ? `/prodotti?${cp.toString()}` : "/prodotti";
+
+  return { title, description, alternates: { canonical } };
+}
 
 function getString(v: string | string[] | undefined): string {
   return typeof v === "string" ? v : (Array.isArray(v) ? v[0] : "") ?? "";
@@ -63,8 +107,50 @@ async function ProductsResults({ searchParams }: { searchParams: Awaited<SearchP
     return `/prodotti?${params.toString()}`;
   };
 
+  // CollectionPage + ItemList (prodotti mostrati) + BreadcrumbList per l'archivio.
+  const collectionName =
+    larghezza && altezza && diametro ? `Pneumatici ${larghezza}/${altezza} R${diametro}` :
+    marche.length === 1 ? `Pneumatici ${marche[0]}` :
+    stagioni[0] ? `Pneumatici ${stagioni[0].replace("-", " ")}` :
+    cat ? `Pneumatici ${cat.charAt(0).toUpperCase() + cat.slice(1)}` :
+    "Catalogo pneumatici";
+  const collectionSchema = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "CollectionPage",
+        name: collectionName,
+        isPartOf: { "@id": `${SITE}/#website` },
+        mainEntity: {
+          "@type": "ItemList",
+          numberOfItems: result.nbHits,
+          itemListElement: result.hits.map((p, i) => ({
+            "@type": "ListItem",
+            position: page * 24 + i + 1,
+            url: `${SITE}/prodotto/${p.id}`,
+            name: p.titolo,
+          })),
+        },
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: `${SITE}/` },
+          { "@type": "ListItem", position: 2, name: "Catalogo", item: `${SITE}/prodotti` },
+        ],
+      },
+    ],
+  };
+
   return (
     <>
+      {result.hits.length > 0 && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionSchema) }}
+        />
+      )}
+
       {/* Toolbar */}
       <div className="flex items-center justify-between mb-6">
         <p className="text-sm text-[#57636C]">

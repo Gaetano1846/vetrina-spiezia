@@ -220,11 +220,18 @@ async function _search(indexName: string, opts: SearchOpts): Promise<SearchResul
   };
 }
 
+const EMPTY_RESULT: SearchResult = { hits: [], nbHits: 0, page: 0, nbPages: 0, facets: {} };
+
 export async function searchProdotti(opts: SearchOpts = {}): Promise<SearchResult> {
   if (opts.sortByPrice === "asc") {
     try { return await _search(INDEX_PRICE_ASC, opts); } catch { /* fall through */ }
   }
-  return await _search(INDEX, opts);
+  try {
+    return await _search(INDEX, opts);
+  } catch (err) {
+    console.error("[Algolia] searchProdotti failed:", err);
+    return EMPTY_RESULT;
+  }
 }
 
 export const getProdottoById = cache(async function getProdottoById(id: string): Promise<Prodotto | null> {
@@ -290,4 +297,51 @@ export async function facetValues(attr: string, extra: SearchOpts = {}): Promise
   } catch {
     return [];
   }
+}
+
+// Stesso filtro prezzo del catalogo: esclude i record "civetta" senza prezzo reale.
+const SITEMAP_FILTER = "Prezzo_Privato >= 20 OR Prezzo_T24 >= 20";
+
+// Enumera gli objectID dei prodotti EFFETTIVAMENTE VENDIBILI per la sitemap.
+// Usiamo l'indice `*_prezzo_privato_asc` (lo stesso del catalogo pubblico): contiene solo
+// i prodotti a stock proprio mostrati agli utenti (~3.3k), non l'intero catalogo fornitori
+// dropship (~89k pagine sottili che sprecherebbero crawl budget e diluirebbero la qualità).
+// La paginazione search di Algolia è limitata a 1000 → browseObjects itera tutto via cursor.
+// Se la key non ha l'ACL "browse", fallback partizionando per Marca (ogni marca < 1000).
+export async function getAllProductIds(): Promise<string[]> {
+  const ids = new Set<string>();
+  try {
+    await client().browseObjects<AlgoliaHit>({
+      indexName: INDEX_PRICE_ASC,
+      browseParams: { query: "", filters: SITEMAP_FILTER, attributesToRetrieve: ["objectID"], hitsPerPage: 1000 },
+      aggregator: (res) => {
+        for (const h of res.hits as unknown as AlgoliaHit[]) if (h.objectID) ids.add(h.objectID);
+      },
+    });
+    if (ids.size > 0) return [...ids];
+  } catch (err) {
+    console.error("[sitemap] browseObjects non disponibile, fallback per-marca:", err);
+  }
+
+  // Fallback: una query per marca (≤1000 hit ciascuna), così resta entro il limite.
+  try {
+    const marche = await facetValues("Marca");
+    for (const m of marche) {
+      const res = await client().searchSingleIndex<AlgoliaHit>({
+        indexName: INDEX_PRICE_ASC,
+        searchParams: {
+          query: "",
+          hitsPerPage: 1000,
+          filters: SITEMAP_FILTER,
+          attributesToRetrieve: ["objectID"],
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          facetFilters: [[`Marca:${m}`]] as any,
+        },
+      });
+      for (const h of res.hits as unknown as AlgoliaHit[]) if (h.objectID) ids.add(h.objectID);
+    }
+  } catch (err) {
+    console.error("[sitemap] fallback per-marca fallito:", err);
+  }
+  return [...ids];
 }

@@ -13,6 +13,11 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "**" },
     ],
   },
+  // URL SEO-friendly per gli archivi: l'utente vede /pneumatici-205-55-r16, /pneumatici-michelin,
+  // /pneumatici-invernali; internamente sono serviti dalla route /archivio/[slug].
+  async rewrites() {
+    return [{ source: "/pneumatici-:slug", destination: "/archivio/:slug" }];
+  },
 };
 
 export default nextConfig;
