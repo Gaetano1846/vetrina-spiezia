@@ -39,8 +39,8 @@ export default function ChiSiamoPage() {
 
         <div className="relative max-w-8xl mx-auto px-4 sm:px-6 py-12 sm:py-28">
           <div className="max-w-xl">
-            <div className="inline-flex items-center gap-2 bg-[#FFC300]/20 border border-[#FFC300]/40 rounded-full px-4 py-1.5 mb-6">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#FFC300]" />
+            <div className="flex items-center gap-3 mb-6">
+              <span className="w-1 h-5 rounded-full bg-[#FFC300] flex-shrink-0" />
               <span className="text-xs font-bold text-[#FFC300] uppercase tracking-widest">Chi siamo</span>
             </div>
             <h1 className="text-3xl sm:text-5xl font-black text-white mb-5 leading-tight">
@@ -111,8 +111,8 @@ export default function ChiSiamoPage() {
       <section className="py-12 sm:py-20 bg-[#F8F9FB] border-b border-[#E5E7EB]">
         <div className="max-w-8xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 bg-[#FFC300]/10 border border-[#FFC300]/30 rounded-full px-4 py-1.5 mb-4">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#FFC300]" />
+            <div className="inline-flex items-center gap-2.5 mb-4">
+              <span className="w-1 h-5 rounded-full bg-[#FFC300] flex-shrink-0" />
               <span className="text-xs font-bold text-[#92700A] uppercase tracking-widest">I nostri punti vendita</span>
             </div>
             <h2 className="text-3xl font-black text-[#111827]">4 sedi a tua disposizione</h2>

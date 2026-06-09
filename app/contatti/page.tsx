@@ -77,8 +77,8 @@ export default function ContattiPage() {
         />
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent" />
         <div className="relative max-w-8xl mx-auto px-4 sm:px-6 py-12 sm:py-28">
-          <div className="inline-flex items-center gap-2 bg-[#FFC300]/20 border border-[#FFC300]/40 rounded-full px-4 py-1.5 mb-5">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#FFC300]" />
+          <div className="flex items-center gap-3 mb-5">
+            <span className="w-1 h-5 rounded-full bg-[#FFC300] flex-shrink-0" />
             <span className="text-xs font-bold text-[#FFC300] uppercase tracking-widest">Contatti</span>
           </div>
           <h1 className="text-3xl sm:text-5xl font-black text-white mb-4 leading-tight">
