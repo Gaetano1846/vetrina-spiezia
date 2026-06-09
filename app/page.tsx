@@ -3,6 +3,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { MapPin, Search, Star, ArrowRight, Zap, Car, CalendarDays, ShoppingCart as ShoppingCart2 } from "lucide-react";
 import HomeHero from "@/components/ui/HomeHero";
+import ProductCard from "@/components/products/ProductCard";
+import { getOfferte } from "@/lib/algolia";
 
 export const metadata: Metadata = {
   title: "Spiezia Tyres — Pneumatici Online | 4 Sedi Campania e Lazio",
@@ -37,7 +39,10 @@ const REVIEWS = [
   { name: "I-TEAM SOLUTION S.R.L.", text: "Prezzi e qualità dei servizi ottimo. Una struttura davvero enorme e dalla mole di clientela che si trova andando lì si capisce che nella zona sia molto quotato. Hanno personale davvero accogliente e gentilissimo con una sala d'attesa e il personale operativo davvero professionale e disponibili." },
 ];
 
-export default function HomePage() {
+export const revalidate = 3600;
+
+export default async function HomePage() {
+  const { offerte } = await getOfferte({ limit: 4, minDiscount: 10 });
   return (
     <>
       {/* ══════════════════════════════════════
@@ -152,34 +157,16 @@ export default function HomePage() {
             Approfitta delle convenienze di Spiezia Tyres: scopri tutte le offerte su pneumatici e servizi per la tua auto!
           </p>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {[
-              { label: "FALKEN",    title: "Ogni 4 pneumatici Falken ≥16\" fino a 20€ in buoni carburante", cat: "Estive" },
-              { label: "INVERNALI", title: "Gomme invernali già disponibili — prepara l'auto per il freddo",  cat: "Invernali" },
-              { label: "PRENOTA",   title: "Prenota il montaggio nelle nostre 4 sedi — Nola, Volla, Portici, Fiano Romano", cat: "Tutti" },
-            ].map((promo) => (
-              <div key={promo.title} className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl overflow-hidden group hover:border-[#FFC300]/40 transition-all">
-                <div className="h-40 bg-gradient-to-br from-[#222] to-[#111] flex items-center justify-center relative overflow-hidden">
-                  <div className="absolute top-3 left-3 bg-[#FFC300] text-[#111] text-[10px] font-black px-3 py-1 rounded-full">
-                    {promo.label}
-                  </div>
-                  <div className="text-7xl opacity-10">🏎️</div>
-                </div>
-                <div className="p-5">
-                  <p className="text-white font-bold text-sm leading-snug mb-3">{promo.title}</p>
-                  <Link
-                    href={`/prodotti?stagioni=${promo.cat === "Tutti" ? "" : promo.cat}`}
-                    className="text-[#FFC300] text-xs font-bold flex items-center gap-1 group-hover:gap-2 transition-all"
-                  >
-                    Scopri l&apos;offerta <ArrowRight size={12} />
-                  </Link>
-                </div>
-              </div>
-            ))}
-          </div>
+          {offerte.length > 0 ? (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {offerte.map((p) => <ProductCard key={p.id} prodotto={p} />)}
+            </div>
+          ) : (
+            <p className="text-[#888]">Nuove offerte in arrivo — intanto sfoglia il catalogo per i prezzi più convenienti.</p>
+          )}
 
           <div className="mt-10 text-center">
-            <Link href="/prodotti?sortByPrice=asc" className="btn-gold-lg inline-flex items-center gap-2">
+            <Link href="/offerte" className="btn-gold-lg inline-flex items-center gap-2">
               Vedi tutte le offerte <ArrowRight size={18} />
             </Link>
           </div>

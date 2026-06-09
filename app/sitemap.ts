@@ -10,6 +10,7 @@ export const revalidate = 86400;
 const STATIC_ROUTES: MetadataRoute.Sitemap = [
   { url: `${BASE}/`,          priority: 1.0, changeFrequency: "weekly"  },
   { url: `${BASE}/prodotti`,  priority: 0.9, changeFrequency: "daily"   },
+  { url: `${BASE}/offerte`,   priority: 0.9, changeFrequency: "daily"   },
   { url: `${BASE}/chi-siamo`, priority: 0.7, changeFrequency: "monthly" },
   { url: `${BASE}/contatti`,  priority: 0.8, changeFrequency: "monthly" },
   { url: `${BASE}/privacy`,   priority: 0.3, changeFrequency: "yearly"  },

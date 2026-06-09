@@ -9,7 +9,7 @@ import AuthModal from "@/components/auth/AuthModal";
 
 const NAV_LINKS = [
   { label: "CATALOGO",        href: "/prodotti" },
-  { label: "OFFERTE",         href: "/prodotti?sortByPrice=asc" },
+  { label: "OFFERTE",         href: "/offerte" },
   { label: "GOMME INVERNALI",  href: "/prodotti?stagioni=Invernali" },
   { label: "GOMME ESTIVE",     href: "/prodotti?stagioni=Estive" },
   { label: "GOMME 4 STAGIONI", href: "/prodotti?stagioni=4-Stagioni" },

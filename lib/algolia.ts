@@ -234,6 +234,46 @@ export async function searchProdotti(opts: SearchOpts = {}): Promise<SearchResul
   }
 }
 
+// ─── Offerte ─────────────────────────────────────────────────────────────────
+// Il DB non ha un campo "in offerta": l'unico segnale di sconto è Prezzo_Gommista/
+// Grossista > Prezzo_Privato (già mappato in prezzoPrecedente). La maggior parte dei
+// prodotti ha ribassi minimi (~5%, normale markup), quindi consideriamo "offerta" solo
+// uno sconto REALE ≥ minDiscount su prodotto in stock, ordinato per sconto decrescente.
+export type Offerta = Prodotto & { sconto: number };
+
+export async function getOfferte(opts: { limit?: number; minDiscount?: number } = {}): Promise<{ offerte: Offerta[]; total: number }> {
+  const limit = opts.limit ?? 24;
+  const minDiscount = opts.minDiscount ?? 10;
+  // Indice vendibile (stesso del catalogo, ~3.3k prodotti a stock proprio), NON i 122k dropship.
+  let raw: AlgoliaHit[] = [];
+  try {
+    const res = await client().searchSingleIndex<AlgoliaHit>({
+      indexName: INDEX_PRICE_ASC,
+      searchParams: { query: "", hitsPerPage: 1000, filters: "Prezzo_Privato >= 20" },
+    });
+    raw = res.hits as unknown as AlgoliaHit[];
+  } catch (err) {
+    console.error("[Algolia] getOfferte failed:", err);
+    return { offerte: [], total: 0 };
+  }
+  // Sconto reale = listino max(Gommista, Grossista) vs prezzo Privato. Usiamo max() (non `??`)
+  // perché spesso uno dei due è 0; sovrascriviamo prezzoPrecedente così il badge sconto compare.
+  const offers: Offerta[] = [];
+  for (const h of raw) {
+    const p = mapAlgoliaHit(h);
+    if (p.prezzo <= 0 || p.stock <= 0) continue;
+    const t = (p.titolo + " " + p.modello).toLowerCase();
+    if (t.includes("camera d'aria") || t.includes("camera d aria")) continue;
+    const ref = applyIva(Math.max(toNum(h.Prezzo_Gommista), toNum(h.Prezzo_Grossista)));
+    if (ref <= p.prezzo) continue;
+    const sconto = Math.round((1 - p.prezzo / ref) * 100);
+    if (sconto < minDiscount) continue;
+    offers.push({ ...p, prezzoPrecedente: ref, sconto });
+  }
+  offers.sort((a, b) => b.sconto - a.sconto);
+  return { offerte: offers.slice(0, limit), total: offers.length };
+}
+
 export const getProdottoById = cache(async function getProdottoById(id: string): Promise<Prodotto | null> {
   try {
     const res = await client().getObject<AlgoliaHit>({ indexName: INDEX, objectID: id });
