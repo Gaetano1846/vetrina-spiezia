@@ -8,16 +8,18 @@ const BASE = "https://spieziatyres.it";
 export const revalidate = 86400;
 
 import { SEDI } from "@/lib/sedi";
+import { PROMOZIONI } from "@/lib/promozioni";
 
 const STATIC_ROUTES: MetadataRoute.Sitemap = [
-  { url: `${BASE}/`,          priority: 1.0, changeFrequency: "weekly"  },
-  { url: `${BASE}/prodotti`,  priority: 0.9, changeFrequency: "daily"   },
-  { url: `${BASE}/offerte`,   priority: 0.9, changeFrequency: "daily"   },
-  { url: `${BASE}/sedi`,      priority: 0.8, changeFrequency: "monthly" },
-  { url: `${BASE}/chi-siamo`, priority: 0.7, changeFrequency: "monthly" },
-  { url: `${BASE}/contatti`,  priority: 0.8, changeFrequency: "monthly" },
-  { url: `${BASE}/privacy`,   priority: 0.3, changeFrequency: "yearly"  },
-  { url: `${BASE}/termini`,   priority: 0.3, changeFrequency: "yearly"  },
+  { url: `${BASE}/`,           priority: 1.0, changeFrequency: "weekly"  },
+  { url: `${BASE}/prodotti`,   priority: 0.9, changeFrequency: "daily"   },
+  { url: `${BASE}/offerte`,    priority: 0.9, changeFrequency: "daily"   },
+  { url: `${BASE}/promozioni`, priority: 0.8, changeFrequency: "weekly"  },
+  { url: `${BASE}/sedi`,       priority: 0.8, changeFrequency: "monthly" },
+  { url: `${BASE}/chi-siamo`,  priority: 0.7, changeFrequency: "monthly" },
+  { url: `${BASE}/contatti`,   priority: 0.8, changeFrequency: "monthly" },
+  { url: `${BASE}/privacy`,    priority: 0.3, changeFrequency: "yearly"  },
+  { url: `${BASE}/termini`,    priority: 0.3, changeFrequency: "yearly"  },
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -30,6 +32,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     url: `${BASE}/sedi/${s.slug}`,
     lastModified: now,
     changeFrequency: "monthly",
+    priority: 0.7,
+  }));
+
+  // Pagine promozione dedicate.
+  const promoRoutes: MetadataRoute.Sitemap = PROMOZIONI.map((p) => ({
+    url: `${BASE}/promozioni/${p.slug}`,
+    lastModified: now,
+    changeFrequency: "weekly",
     priority: 0.7,
   }));
 
@@ -56,5 +66,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   const staticRoutes: MetadataRoute.Sitemap = STATIC_ROUTES.map((r) => ({ ...r, lastModified: now }));
-  return [...staticRoutes, ...sedeRoutes, ...archiveRoutes, ...productRoutes];
+  return [...staticRoutes, ...promoRoutes, ...sedeRoutes, ...archiveRoutes, ...productRoutes];
 }

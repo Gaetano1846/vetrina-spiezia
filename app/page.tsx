@@ -3,8 +3,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { MapPin, Search, Star, ArrowRight, Zap, Car, CalendarDays, ShoppingCart as ShoppingCart2 } from "lucide-react";
 import HomeHero from "@/components/ui/HomeHero";
-import ProductCard from "@/components/products/ProductCard";
-import { getOfferte } from "@/lib/algolia";
+import PromoCarousel from "@/components/home/PromoCarousel";
+import { PROMOZIONI } from "@/lib/promozioni";
 
 export const metadata: Metadata = {
   title: "Spiezia Tyres — Pneumatici Online | 4 Sedi Campania e Lazio",
@@ -41,8 +41,7 @@ const REVIEWS = [
 
 export const revalidate = 3600;
 
-export default async function HomePage() {
-  const { offerte } = await getOfferte({ limit: 4, minDiscount: 10 });
+export default function HomePage() {
   return (
     <>
       {/* ══════════════════════════════════════
@@ -157,17 +156,11 @@ export default async function HomePage() {
             Approfitta delle convenienze di Spiezia Tyres: scopri tutte le offerte su pneumatici e servizi per la tua auto!
           </p>
 
-          {offerte.length > 0 ? (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {offerte.map((p) => <ProductCard key={p.id} prodotto={p} />)}
-            </div>
-          ) : (
-            <p className="text-[#888]">Nuove offerte in arrivo — intanto sfoglia il catalogo per i prezzi più convenienti.</p>
-          )}
+          <PromoCarousel promozioni={PROMOZIONI} />
 
           <div className="mt-10 text-center">
-            <Link href="/offerte" className="btn-gold-lg inline-flex items-center gap-2">
-              Vedi tutte le offerte <ArrowRight size={18} />
+            <Link href="/promozioni" className="btn-gold-lg inline-flex items-center gap-2">
+              Vedi tutte le promozioni <ArrowRight size={18} />
             </Link>
           </div>
         </div>
