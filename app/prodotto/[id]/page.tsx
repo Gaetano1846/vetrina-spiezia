@@ -97,9 +97,8 @@ export default async function ProdottoPage({ params }: Props) {
           availability: prodotto.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
           seller: { "@type": "Organization", name: "Spiezia Tyres S.p.A.", "@id": `${SITE}/#organization` },
         },
-        ...(prodotto.recensioni > 0
-          ? { aggregateRating: { "@type": "AggregateRating", ratingValue: prodotto.rating.toFixed(1), reviewCount: prodotto.recensioni } }
-          : {}),
+        // aggregateRating volutamente omesso: senza recensioni visibili in pagina viola
+        // le policy Google sui rich result (rischio penalizzazione/manual action).
       },
       {
         "@type": "BreadcrumbList",

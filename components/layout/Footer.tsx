@@ -5,21 +5,25 @@ import { Phone, Mail, MapPin, Clock } from "lucide-react";
 const SEDI = [
   {
     city: "Nola",
+    slug: "nola",
     address: "Via Croce Del Papa 27/29",
     maps: "https://www.google.com/maps/dir//Via+Croce+del+Papa,+27%2F29,+80035+Nola+NA/@40.9301147,14.428379,12z/data=!4m8!4m7!1m0!1m5!1m1!1s0x133bb21ae5ac3e1d:0x816d8c387b2451ee!2m2!1d14.5107798!2d40.930144?entry=ttu",
   },
   {
     city: "Volla",
+    slug: "volla",
     address: "Via Palazziello, 73",
     maps: "https://www.google.com/maps/dir/40.9292509,14.5072726/spiezia+tyres+volla/@40.9191238,14.2492527,11z/data=!3m1!4b1!4m9!4m8!1m1!4e1!1m5!1m1!1s0x133ba8f1823dabbb:0x5593c595afb22bd8!2m2!1d14.3416487!2d40.8875763?entry=ttu&g_ep=EgoyMDI1MDkxMC4wIKXMDSoASAFQAw%3D%3D",
   },
   {
     city: "Portici",
+    slug: "portici",
     address: "Via S. Cristoforo, 93",
     maps: "https://www.google.com/maps?rlz=1C1ONGR_itIT1037IT1037&sxsrf=AB5stBjW_3CCfdtN8rqX-bEFmtDjE_6cKg:1690991235852&uact=5&gs_lp=Egxnd3Mtd2l6LXNlcnAiFXNwaWV6aWEgdHlyZXMgcG9ydGljaTIHECMYigUYJzILEC4YgAQYxwEYrwEyAhAmMhoQLhiABBjHARivARiXBRjcBBjeBBjgBNgBAUiRDFDEBFjLCnACeAGQAQCYAXmgAfYFqgEDMC43uAEDyAEA-AEBwgIKEAAYRxjWBBiwA8ICBBAjGCfCAhAQLhiABBgUGIcCGMcBGK8BwgIJEAAYFhgeGPEEwgIGEAAYFhgewgIfEC4YgAQYFBiHAhjHARivARiXBRjcBBjeBBjgBNgBAeIDBBgAIEGIBgGQBga6BgYIARABGBQ&um=1&ie=UTF-8&fb=1&gl=it&sa=X&geocode=KceqU7appzsTMcu6GU8hZOw3&daddr=Via+S.+Cristoforo,+93,+80055+Portici+NA",
   },
   {
     city: "Fiano Romano",
+    slug: "fiano-romano",
     address: "Via Procoio, 41A",
     maps: "https://www.google.com/maps/place/Via+Procoio,+41,+00065+Fiano+Romano+RM/@42.1560406,12.6166334,18z/data=!3m1!4b1!4m6!3m5!1s0x132f6d59d6ec1a2b:0xa6164bc7110fcd44!8m2!3d42.1560394!4d12.6180815!16s%2Fg%2F11k5jpbngn?entry=tts",
   },
@@ -84,23 +88,31 @@ export default function Footer() {
 
           {/* Le nostre sedi */}
           <div>
-            <h4 className="text-[#111] text-xs font-black uppercase tracking-widest mb-5">Le nostre sedi</h4>
-            <div className="space-y-4">
+            <Link href="/sedi" className="text-[#111] text-xs font-black uppercase tracking-widest mb-5 inline-flex items-center gap-1 hover:text-[#FFC300] transition-colors">
+              Le nostre sedi →
+            </Link>
+            <div className="space-y-4 mt-5">
               {SEDI.map((s) => (
                 <div key={s.city} className="group">
-                  <div className="flex items-center gap-1.5 mb-0.5">
+                  <Link href={`/sedi/${s.slug}`} className="flex items-center gap-1.5 mb-0.5">
                     <MapPin size={12} className="text-[#FFC300] flex-shrink-0" />
-                    <p className="text-sm text-[#111] font-semibold">{s.city}</p>
-                  </div>
+                    <span className="text-sm text-[#111] font-semibold group-hover:text-[#FFC300] transition-colors">{s.city}</span>
+                  </Link>
                   <p className="text-xs text-[#9DA5AE] mb-1 pl-[18px]">{s.address}</p>
-                  <a
-                    href={s.maps}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-[11px] font-medium text-[#FFC300] hover:text-[#111] transition-colors pl-[18px]"
-                  >
-                    Indica via Maps →
-                  </a>
+                  <div className="flex items-center gap-2 pl-[18px]">
+                    <Link href={`/sedi/${s.slug}`} className="text-[11px] font-medium text-[#57636C] hover:text-[#111] transition-colors">
+                      Dettagli sede
+                    </Link>
+                    <span className="text-[11px] text-[#D1D5DB]">·</span>
+                    <a
+                      href={s.maps}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[11px] font-medium text-[#FFC300] hover:text-[#111] transition-colors"
+                    >
+                      Maps →
+                    </a>
+                  </div>
                 </div>
               ))}
             </div>
