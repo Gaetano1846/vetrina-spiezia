@@ -6,6 +6,7 @@ const APP_ID = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID || "";
 const SEARCH_KEY = process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_KEY || "";
 const INDEX = process.env.NEXT_PUBLIC_ALGOLIA_INDEX || "Prodotti";
 const INDEX_PRICE_ASC = process.env.NEXT_PUBLIC_ALGOLIA_INDEX_PRICE_ASC || `${INDEX}_prezzo_privato_asc`;
+const INDEX_PRICE_DESC = process.env.NEXT_PUBLIC_ALGOLIA_INDEX_PRICE_DESC || `${INDEX}_prezzo_privato_desc`;
 const COMBINATIONS_INDEX = "Combinations";
 
 let _client: ReturnType<typeof algoliasearch> | null = null;
@@ -224,16 +225,30 @@ function buildFacetFilters(o: SearchOpts): (string | string[])[] {
   return ff;
 }
 
-async function _search(indexName: string, opts: SearchOpts): Promise<SearchResult> {
-  // Dimensions are not Algolia facets — build a text query like "205/55 R16"
-  const dimensionQuery = !opts.query && opts.larghezza && opts.altezza && opts.diametro
-    ? `${opts.larghezza}/${opts.altezza} R${opts.diametro}`
-    : opts.query ?? "";
+// Le dimensioni NON sono facet Algolia (Larghezza/Altezza/Diametro non sono attributesForFaceting):
+// vengono applicate come testo libero. Costruiamo la stringa PIÙ SPECIFICA possibile anche con
+// misure PARZIALI (es. solo larghezza "205") e la combiniamo con l'eventuale ricerca testuale `q`,
+// invece di sceglierne una sola. Così "michelin" + misura, o "solo 205", filtrano davvero.
+function buildSearchQuery(o: SearchOpts): string {
+  const parts: string[] = [];
+  if (o.query) parts.push(o.query.trim());
+  const { larghezza: w, altezza: h, diametro: d } = o;
+  let dim = "";
+  if (w && h && d) dim = `${w}/${h} R${d}`;
+  else if (w && h) dim = `${w}/${h}`;
+  else if (h && d) dim = `${h} R${d}`;
+  else if (w) dim = w;
+  else if (d) dim = `R${d}`;
+  else if (h) dim = h;
+  if (dim) parts.push(dim);
+  return parts.join(" ").trim();
+}
 
+async function _search(indexName: string, opts: SearchOpts): Promise<SearchResult> {
   const res = await client().searchSingleIndex<AlgoliaHit>({
     indexName,
     searchParams: {
-      query: dimensionQuery,
+      query: buildSearchQuery(opts),
       page: opts.page ?? 0,
       hitsPerPage: opts.hitsPerPage ?? 24,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -262,8 +277,13 @@ async function _search(indexName: string, opts: SearchOpts): Promise<SearchResul
 const EMPTY_RESULT: SearchResult = { hits: [], nbHits: 0, page: 0, nbPages: 0, facets: {} };
 
 export async function searchProdotti(opts: SearchOpts = {}): Promise<SearchResult> {
-  if (opts.sortByPrice === "asc") {
-    try { return await _search(INDEX_PRICE_ASC, opts); } catch { /* fall through */ }
+  // asc/desc usano le replica ordinate per Prezzo_Privato; se la replica non esiste in
+  // Algolia la chiamata fallisce e si ricade sull'indice base (rilevanza) senza rompere la pagina.
+  const sortedIndex =
+    opts.sortByPrice === "asc" ? INDEX_PRICE_ASC :
+    opts.sortByPrice === "desc" ? INDEX_PRICE_DESC : null;
+  if (sortedIndex) {
+    try { return await _search(sortedIndex, opts); } catch { /* fall through to relevance */ }
   }
   try {
     return await _search(INDEX, opts);

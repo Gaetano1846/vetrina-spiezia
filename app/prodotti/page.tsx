@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { searchProdotti, facetValues } from "@/lib/algolia";
 import ProductCard from "@/components/products/ProductCard";
 import FiltersPanel from "@/components/products/FiltersPanel";
+import SortSelect from "@/components/products/SortSelect";
 import Link from "next/link";
 
 const SITE = "https://spieziatyres.it";
@@ -77,6 +78,11 @@ async function ProductsResults({ searchParams }: { searchParams: Awaited<SearchP
   const cat             = getString(searchParams.cat);
   const spedizione      = getString(searchParams.spedizione) === "1";
   const page            = Math.max(0, parseInt(getString(searchParams.page) || "0", 10));
+  // Ordinamento: "desc" / "relevance" / (default) "asc". Param assente = asc (comportamento storico,
+  // più economico per l'utente). "relevance" → nessun ordinamento (indice base).
+  const sortRaw         = getString(searchParams.sortByPrice);
+  const sortByPrice: "asc" | "desc" | undefined =
+    sortRaw === "desc" ? "desc" : sortRaw === "relevance" ? undefined : "asc";
   const result = await searchProdotti({
     query, page, hitsPerPage: 24,
     larghezza, altezza, diametro,
@@ -85,7 +91,7 @@ async function ProductsResults({ searchParams }: { searchParams: Awaited<SearchP
     indiciCarico:   indiciCarico.length   ? indiciCarico   : undefined,
     categoria:      cat       || undefined,
     spedizioneVeloce: spedizione || undefined,
-    sortByPrice:    "asc",
+    sortByPrice,
   });
 
   const totalPages = result.nbPages;
@@ -103,9 +109,23 @@ async function ProductsResults({ searchParams }: { searchParams: Awaited<SearchP
     if (query) params.set("q", query);
     if (cat) params.set("cat", cat);
     if (spedizione) params.set("spedizione", "1");
+    if (sortRaw) params.set("sortByPrice", sortRaw);
     if (p > 0) params.set("page", String(p));
     return `/prodotti?${params.toString()}`;
   };
+
+  // Parametri correnti (senza page/sort) per il selettore ordinamento.
+  const sortParams: Record<string, string> = {};
+  if (larghezza) sortParams.larghezza = larghezza;
+  if (altezza) sortParams.altezza = altezza;
+  if (diametro) sortParams.diametro = diametro;
+  if (marche.length) sortParams.marche = marche.join(",");
+  if (stagioni.length) sortParams.stagioni = stagioni.join(",");
+  if (indiciVelocita.length) sortParams.iv = indiciVelocita.join(",");
+  if (indiciCarico.length) sortParams.ic = indiciCarico.join(",");
+  if (query) sortParams.q = query;
+  if (cat) sortParams.cat = cat;
+  if (spedizione) sortParams.spedizione = "1";
 
   // CollectionPage + ItemList (prodotti mostrati) + BreadcrumbList per l'archivio.
   const collectionName =
@@ -152,11 +172,12 @@ async function ProductsResults({ searchParams }: { searchParams: Awaited<SearchP
       )}
 
       {/* Toolbar */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between gap-3 mb-6">
         <p className="text-sm text-[#57636C]">
           <span className="font-bold text-[#001D3D]">{result.nbHits.toLocaleString("it-IT")}</span> risultati
           {hasFilters && <span className="text-[#FFC300] ml-1 font-semibold">filtrati</span>}
         </p>
+        <SortSelect currentSort={sortRaw || "asc"} currentParams={sortParams} />
       </div>
 
       {/* Applied filters summary */}
