@@ -38,3 +38,19 @@ export function calcTotaleCarrello(
     0
   );
 }
+
+// Tetto di pezzi per riga carrello (anche per non saturare l'agenda con prenotazioni assurde).
+export const CART_MAX_QTY = 12;
+
+// Quantità massima prenotabile per un prodotto — unica fonte di verità usata da carrello,
+// card catalogo e scheda prodotto, così lo stock viene SEMPRE rispettato.
+//  - esaurito (stock<=0)        → 0 (non aggiungibile)
+//  - dropship T24 (su ordine)   → fino al cap (il fornitore evade il treno completo)
+//  - stock locale reale         → almeno un treno (4) e fino allo stock, mai oltre il cap.
+// Il minimo di 4 evita di bloccare l'acquisto standard quando lo stock locale è basso o è il
+// fallback sintetico (hasStock→1): è un flusso di PRENOTAZIONE, la disponibilità è confermata in sede.
+export function maxAcquistabile(p: { stock: number; t24: boolean }): number {
+  if (p.stock <= 0) return 0;
+  if (p.t24) return CART_MAX_QTY;
+  return Math.min(Math.max(p.stock, 4), CART_MAX_QTY);
+}

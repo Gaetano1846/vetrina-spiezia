@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ShoppingCart, Check } from "lucide-react";
 import { useState } from "react";
 import type { Prodotto } from "@/lib/types";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, maxAcquistabile } from "@/lib/utils";
 import { useCart } from "@/context/CartContext";
 import toast from "react-hot-toast";
 
@@ -52,7 +52,7 @@ export default function ProductCard({ prodotto: p }: Props) {
 
   const inStock     = p.stock > 0;
   const ultimiPezzi = p.stock > 0 && p.stock <= 4;
-  const maxQty      = Math.min(p.stock || 10, 10);
+  const maxQty      = maxAcquistabile(p);
   const sconto      = p.prezzoPrecedente
     ? Math.round(((p.prezzoPrecedente - p.prezzo) / p.prezzoPrecedente) * 100)
     : 0;

@@ -35,6 +35,7 @@ export type ArticoloCarrello = {
   prezzoUnitario: number;
   pfu: number;
   quantita: number;
+  maxQty?: number;
   sku: string;
   t24: boolean;
   stagione: string;

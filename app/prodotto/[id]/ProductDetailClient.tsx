@@ -7,7 +7,7 @@ import {
   Plus, Minus, Check, Clock, ChevronDown, Calendar,
 } from "lucide-react";
 import type { Prodotto } from "@/lib/types";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, maxAcquistabile } from "@/lib/utils";
 import { useCart } from "@/context/CartContext";
 import { searchProdotti } from "@/lib/algolia";
 import ProductCard from "@/components/products/ProductCard";
@@ -223,7 +223,7 @@ export default function ProductDetailClient({ prodotto: p }: Props) {
 
   const disponibile = p.stock > 0;
   const ultimiPezzi = p.stock > 0 && p.stock <= 5;
-  const maxQty = Math.min(p.stock || 10, 12);
+  const maxQty = maxAcquistabile(p);
   const misura = `${p.larghezza}/${p.altezza} R${p.diametro}`;
   const indici = [p.indiceCarico, p.indiceVelocita].filter(Boolean).join("");
   const sconto = p.prezzoPrecedente
