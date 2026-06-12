@@ -18,6 +18,26 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [{ source: "/pneumatici-:slug", destination: "/archivio/:slug" }];
   },
+  // Security header di base (difesa in profondità). NB: la CSP NON è qui — va introdotta a parte
+  // in modalità Report-Only e testata (Google Maps iframe, PayPal/Klarna, Firebase, JSON-LD inline).
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          // Forza HTTPS per 1 anno su dominio e sottodomini (ignorato su localhost/HTTP).
+          { key: "Strict-Transport-Security", value: "max-age=31536000; includeSubDomains" },
+          // Impedisce il MIME-sniffing dei tipi di risposta.
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          // Anti-clickjacking: il sito non è incorporabile in iframe di terzi.
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          // La vetrina non usa camera/microfono/geolocalizzazione: disabilitati.
+          { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+        ],
+      },
+    ];
+  },
 };
 
 export default nextConfig;
