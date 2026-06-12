@@ -84,8 +84,9 @@ export default async function PromoPage({ params }: Props) {
             <div className="max-w-8xl mx-auto px-4 sm:px-6 w-full">
               <div className="max-w-2xl">
                 {promo.badge && (
-                  <span className="inline-flex items-center gap-1.5 mb-4 px-3 py-1 rounded-full bg-[#FFC300] text-[#111] text-[11px] font-black uppercase tracking-widest">
-                    {promo.badge}
+                  <span className="inline-flex items-center gap-2 mb-4">
+                    <span className="w-1 h-5 rounded-full bg-[#FFC300] flex-shrink-0" />
+                    <span className="text-xs font-bold text-[#FFC300] uppercase tracking-widest">{promo.badge}</span>
                   </span>
                 )}
                 <h1 className="text-3xl sm:text-5xl font-black text-white leading-tight mb-3">{promo.title}</h1>
