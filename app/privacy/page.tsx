@@ -23,7 +23,7 @@ export default function PrivacyPage() {
       <div className="space-y-8 text-sm text-[#5C5C5C] leading-relaxed">
         <section>
           <h2 className="text-base font-black text-[#0A0A0A] mb-3">1. Titolare del trattamento</h2>
-          <p>Spiezia Tyres S.p.A. (marchio PrezzoGomme), P.IVA IT07737141213, Via Variante 7 Bis, 301 – Nola (NA). Contatto: <a href="mailto:info@prezzo-gomme.it" className="text-[#FF4500] hover:underline">info@prezzo-gomme.it</a>.</p>
+          <p>Spiezia Tyres S.p.A., P.IVA IT07737141213, Via Croce Del Papa 27/29 – 80035 Nola (NA). Contatto: <a href="mailto:info@spieziatyres.it" className="text-[#FF4500] hover:underline">info@spieziatyres.it</a>.</p>
           <p className="mt-2">Informativa redatta ai sensi del Regolamento UE 2016/679 (GDPR).</p>
         </section>
         <section>
@@ -45,7 +45,7 @@ export default function PrivacyPage() {
         </section>
         <section>
           <h2 className="text-base font-black text-[#0A0A0A] mb-3">4. Diritti dell&apos;interessato</h2>
-          <p>Hai diritto di accedere, rettificare, cancellare i tuoi dati, opporti al trattamento per marketing e richiedere la portabilità. Per esercitare i tuoi diritti: <a href="mailto:info@prezzo-gomme.it" className="text-[#FF4500] hover:underline">info@prezzo-gomme.it</a>.</p>
+          <p>Hai diritto di accedere, rettificare, cancellare i tuoi dati, opporti al trattamento per marketing e richiedere la portabilità. Per esercitare i tuoi diritti: <a href="mailto:info@spieziatyres.it" className="text-[#FF4500] hover:underline">info@spieziatyres.it</a>.</p>
         </section>
       </div>
     </div>

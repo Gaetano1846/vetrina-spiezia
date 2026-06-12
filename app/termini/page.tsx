@@ -23,7 +23,7 @@ export default function TerminiPage() {
       <div className="prose prose-sm max-w-none space-y-8 text-[#5C5C5C] leading-relaxed">
         <section>
           <h2 className="text-base font-black text-[#0A0A0A] mb-3">1. Soggetto gestore</h2>
-          <p>Il presente sito è gestito da Spiezia Tyres S.p.A. (marchio PrezzoGomme), P.IVA IT07737141213, con sede in Via Variante 7 Bis, 301 – Nola (NA), Italia. Contatto: <a href="mailto:info@prezzo-gomme.it" className="text-[#FF4500] hover:underline">info@prezzo-gomme.it</a>.</p>
+          <p>Il presente sito è gestito da Spiezia Tyres S.p.A., P.IVA IT07737141213, con sede in Via Croce Del Papa 27/29 – 80035 Nola (NA), Italia. Contatto: <a href="mailto:info@spieziatyres.it" className="text-[#FF4500] hover:underline">info@spieziatyres.it</a>.</p>
         </section>
         <section>
           <h2 className="text-base font-black text-[#0A0A0A] mb-3">2. Oggetto del servizio</h2>
@@ -43,11 +43,11 @@ export default function TerminiPage() {
         </section>
         <section>
           <h2 className="text-base font-black text-[#0A0A0A] mb-3">6. Garanzia</h2>
-          <p>I prodotti sono coperti dalla garanzia legale di conformità di 24 mesi per i consumatori (12 mesi per le aziende). Per difetti di conformità contattare <a href="mailto:info@prezzo-gomme.it" className="text-[#FF4500] hover:underline">info@prezzo-gomme.it</a>.</p>
+          <p>I prodotti sono coperti dalla garanzia legale di conformità di 24 mesi per i consumatori (12 mesi per le aziende). Per difetti di conformità contattare <a href="mailto:info@spieziatyres.it" className="text-[#FF4500] hover:underline">info@spieziatyres.it</a>.</p>
         </section>
         <section>
-          <h2 className="text-base font-black text-[#0A0A0A] mb-3">9. Contatti</h2>
-          <p>Per qualsiasi comunicazione: <a href="mailto:info@prezzo-gomme.it" className="text-[#FF4500] hover:underline">info@prezzo-gomme.it</a> oppure +39 081 511 5011.</p>
+          <h2 className="text-base font-black text-[#0A0A0A] mb-3">7. Contatti</h2>
+          <p>Per qualsiasi comunicazione: <a href="mailto:info@spieziatyres.it" className="text-[#FF4500] hover:underline">info@spieziatyres.it</a> oppure +39 081 511 5011.</p>
         </section>
       </div>
     </div>
